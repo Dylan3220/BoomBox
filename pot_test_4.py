@@ -1,0 +1,219 @@
+from gpiozero import Button, RotaryEncoder, RGBLED
+from spotipy import Spotify
+from spotipy.oauth2 import SpotifyOAuth
+import time
+import threading
+import random
+from mfrc522 import SimpleMFRC522
+
+# Spotify credentials and scope
+SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
+SPOTIFY_CLIENT_SECRET = 'e5a112f992ee43e9bbea57b8c19b053b'
+SPOTIFY_REDIRECT_URI = 'http://10.0.0.217:8080/auth-response/'
+SPOTIFY_SCOPE = 'user-modify-playback-state user-read-playback-state'
+CACHE_PATH = "/home/dylan/Documents/spotify_auth_cache2.json"
+
+# Hardcoded Spotify device ID
+SPOTIFY_DEVICE_ID = '98bb0735e28656bac098d927d410c3138a4b5bca'
+
+# Initialize Spotipy
+sp = Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIFY_CLIENT_ID,
+                                       client_secret=SPOTIFY_CLIENT_SECRET,
+                                       redirect_uri=SPOTIFY_REDIRECT_URI,
+                                       scope=SPOTIFY_SCOPE,
+                                       cache_path=CACHE_PATH))
+
+# Initialize MFRC522
+reader = SimpleMFRC522()
+
+# Define GPIO pins
+ENCODER_PIN_A = 17
+ENCODER_PIN_B = 27
+ENCODER_PIN_AA = 5
+ENCODER_PIN_BB = 6
+SWITCH_PIN = 20
+
+# Define Rotary Encoders and Button
+first_encoder = RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, wrap=False, max_steps=10)
+second_encoder = RotaryEncoder(ENCODER_PIN_AA, ENCODER_PIN_BB, wrap=True)
+switch = Button(SWITCH_PIN, pull_up=True, bounce_time=.05)
+
+# Define timing constants
+DOUBLE_PRESS_TIME = 0.25  # Time interval to consider as double press
+SINGLE_PRESS_DELAY = 1  # Delay to wait for potential second press
+QUARTER_TURN_STEPS = 0.5  # Number of steps for a quarter turn of the encoder
+
+# Initialize variables
+last_press_time = 0
+press_count = 0
+volume_led_timer = None
+last_second_encoder_value = 0
+current_playlist_index = 0
+forward_encoder_count = 0
+backward_encoder_count = 0
+
+# Hardcoded playlists
+PLAYLISTS = [
+    'playlist:3OW97U4iSQIHFUXMRRh6Us', #Solid Shit 9/16
+    'playlist:37i9dQZF1DWXi7h4mmmkzD', #Country Nights 
+    'playlist:37i9dQZF1DXb8wplbC2YhV', #100 Greates Hip-Hop Songs of the Streaming Era
+    'playlist:37i9dQZF1DX0MLFaUdXnjA', #Chill Pop
+    'playlist:37i9dQZF1DX17GkScaAekA', #Dark Acadamia Classical
+    'playlist:37i9dQZF1DWV7EzJMK2FUI'  #Jazz in the Background
+]
+
+
+
+# Corresponding colors for the playlists
+PLAYLIST_COLORS = [
+    (1, 0, 0),  # Red
+    (0, 1, 0),  # Green
+    (0, 0, 1),  # Blue
+    (1, 1, 0),  # Yellow
+    (1, 0, 1),  # Magenta
+    (0, 1, 1),  # Cyan
+]
+
+def stop_led_blink():
+    rgb_led.off()
+
+def update_volume():
+    global volume_led_timer
+
+    p_encoder_value = first_encoder.value
+    new_volume = int(50 + 50 * p_encoder_value)
+    sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
+    print(f"Volume set to: {new_volume}%")
+
+    if volume_led_timer:
+        volume_led_timer.cancel()
+    volume_level = new_volume / 100
+    rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=3, background=True)
+    volume_led_timer = threading.Timer(3, stop_led_blink)
+    volume_led_timer.start()
+
+def on_button_press():
+    global last_press_time, press_count
+
+    current_time = time.time()
+
+    if current_time - last_press_time < DOUBLE_PRESS_TIME:
+        press_count += 1
+        if press_count == 2:
+            rgb_led.on()
+            print("Button Double Pressed: Skipping Song")
+            sp.next_track(device_id=SPOTIFY_DEVICE_ID)
+            rgb_led.off()
+            press_count = 0
+    else:
+        press_count = 1
+
+    last_press_time = current_time
+
+def check_for_single_press():
+    global last_press_time, press_count
+
+    if time.time() - last_press_time >= SINGLE_PRESS_DELAY and press_count == 1:
+        print("Button Single Pressed: Toggle Pause/Play")
+        current_playback = sp.current_playback()
+        if current_playback and current_playback['is_playing']:
+            sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+        else:
+            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+        press_count = 0
+
+def update_forward_station():
+    global forward_encoder_count, current_playlist_index
+    forward_encoder_count = forward_encoder_count + 1
+    print(f"Forward encoder count: {forward_encoder_count}")
+
+    if forward_encoder_count > 4:
+        forward_encoder_count = 1
+        current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
+        playlist_id = PLAYLISTS[current_playlist_index]
+
+        print(f"Switching to playlist: {playlist_id}")
+
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+
+        rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
+
+def update_backward_station():
+    global backward_encoder_count, current_playlist_index
+    backward_encoder_count = backward_encoder_count + 1
+    print(f"Backward encoder count: {backward_encoder_count}")
+
+    if backward_encoder_count > 4:
+        backward_encoder_count = 1
+        current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
+        playlist_id = PLAYLISTS[current_playlist_index]
+
+        print(f"Switching to playlist: {playlist_id}")
+
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+
+        rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
+
+# Initialize RGB LED
+LED_PIN_R = 22
+LED_PIN_G = 23
+LED_PIN_B = 24
+rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
+
+# Attach handlers
+first_encoder.when_rotated = update_volume
+second_encoder.when_rotated_clockwise = update_forward_station
+second_encoder.when_rotated_counter_clockwise = update_backward_station
+switch.when_pressed = on_button_press
+
+def monitor_playback():
+    while True:
+        current_playback = sp.current_playback()
+        if current_playback is None:
+            rgb_led.off()
+            print("No playback detected. LED off.")
+        elif 'is_playing' in current_playback and current_playback['is_playing']:
+            rgb_led.color = (.15, .15, .15)
+            print("Playback is playing. LED on.")
+        else:
+            rgb_led.off()
+            print("Playback stopped. LED off.")
+        time.sleep(1)  # Check playback status every second
+
+def nfc_listener():
+    while True:
+        try:
+            id, text = reader.read()
+            text = text.strip()  # Remove any leading and trailing whitespace
+            print(f"NFC tag detected with ID: {id} and text: {text}")
+            if text.startswith("spotify:"):
+                try:
+                    sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+                    sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+                    print(f"Playing Spotify URI: {text}")
+                except Exception as e:
+                    print(f"Failed to play Spotify URI: {text} - {e}")
+            else:
+                print(f"Invalid Spotify URI: {text}")
+        except Exception as e:
+            print(f"Error reading NFC tag: {e}")
+        time.sleep(1)  # Delay between NFC reads
+
+playback_thread = threading.Thread(target=monitor_playback)
+playback_thread.daemon = True
+playback_thread.start()
+
+nfc_thread = threading.Thread(target=nfc_listener)
+nfc_thread.daemon = True
+nfc_thread.start()
+
+try:
+    while True:
+        seekCount = random.randrange(1, 140000, 1)
+        positionCount = random.randrange(1, 20, 1)
+        check_for_single_press()
+        time.sleep(0.01)  # Main loop delay
+finally:
+    rgb_led.off()
