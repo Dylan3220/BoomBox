@@ -33,19 +33,26 @@ ENCODER_PIN_AA = 5
 ENCODER_PIN_BB = 6
 SWITCH_PIN = 20
 
+# Initialize RGB LED
+LED_PIN_R = 22
+LED_PIN_G = 23
+LED_PIN_B = 24
+rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
+
 # Define Rotary Encoders and Button
 first_encoder = RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, wrap=False, max_steps=10)
 second_encoder = RotaryEncoder(ENCODER_PIN_AA, ENCODER_PIN_BB, wrap=True)
 switch = Button(SWITCH_PIN, pull_up=True, bounce_time=.05)
 
 # Define timing constants
-DOUBLE_PRESS_TIME = 0.25  # Time interval to consider as double press
+DOUBLE_PRESS_TIME = .5  # Time interval to consider as double press
 SINGLE_PRESS_DELAY = 1  # Delay to wait for potential second press
 QUARTER_TURN_STEPS = 0.5  # Number of steps for a quarter turn of the encoder
 
 # Initialize variables
 last_press_time = 0
 press_count = 0
+presstype = 0
 volume_led_timer = None
 last_second_encoder_value = 0
 current_playlist_index = 0
@@ -95,7 +102,66 @@ def update_volume():
 def on_button_press():
     global last_press_time, press_count
 
-    current_time = time.time()
+    last_press_time = time.time()
+    print("entered button function")
+
+    #print (time.time() - last_press_time)
+
+    while (time.time() - last_press_time < DOUBLE_PRESS_TIME):
+        print("im in the while loop")
+        print (time.time() - last_press_time)
+        #time.time() = time.time()
+        time.sleep(.1)
+        if switch.is_pressed:
+            rgb_led.on()
+            print("Button Double Pressed: Skipping Song")
+            sp.next_track(device_id=SPOTIFY_DEVICE_ID)
+            rgb_led.off()
+            #last_press_time = current_time
+            
+    #last_press_time = time.time()
+    
+    print("Button Single Pressed: Toggle Pause/Play")
+    current_playback = sp.current_playback()
+    if current_playback and current_playback['is_playing']:
+        sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+    else:
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+    
+    """
+    if current_time - last_press_time < DOUBLE_PRESS_TIME:
+        presstype = 1
+        print(current_time-last_press_time)
+
+    else:
+        presstype = 0
+        
+        time.sleep(.25)
+
+        if switch.is_pressed:
+            presstype = 1
+
+        else:
+            presstype = 0
+    
+    last_press_time = current_time
+
+    if presstype:
+        rgb_led.on()
+        print("Button Double Pressed: Skipping Song")
+        sp.next_track(device_id=SPOTIFY_DEVICE_ID)
+        rgb_led.off()
+
+    else:
+        print("Button Single Pressed: Toggle Pause/Play")
+        current_playback = sp.current_playback()
+        if current_playback and current_playback['is_playing']:
+            sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+        else:
+            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+         #press_count = 0
+"""
+"""
 
     if current_time - last_press_time < DOUBLE_PRESS_TIME:
         press_count += 1
@@ -108,11 +174,6 @@ def on_button_press():
     else:
         press_count = 1
 
-    last_press_time = current_time
-
-def check_for_single_press():
-    global last_press_time, press_count
-
     if time.time() - last_press_time >= SINGLE_PRESS_DELAY and press_count == 1:
         print("Button Single Pressed: Toggle Pause/Play")
         current_playback = sp.current_playback()
@@ -122,10 +183,16 @@ def check_for_single_press():
             sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
         press_count = 0
 
+    last_press_time = current_time 
+    
+    """
+
 def update_forward_station():
     global forward_encoder_count, current_playlist_index
     forward_encoder_count = forward_encoder_count + 1
     print(f"Forward encoder count: {forward_encoder_count}")
+    seekCount = random.randrange(1, 140000, 1)
+    positionCount = random.randrange(1, 20, 1)
 
     if forward_encoder_count > 4:
         forward_encoder_count = 1
@@ -143,6 +210,8 @@ def update_backward_station():
     global backward_encoder_count, current_playlist_index
     backward_encoder_count = backward_encoder_count + 1
     print(f"Backward encoder count: {backward_encoder_count}")
+    seekCount = random.randrange(1, 140000, 1)
+    positionCount = random.randrange(1, 20, 1)
 
     if backward_encoder_count > 4:
         backward_encoder_count = 1
@@ -155,18 +224,6 @@ def update_backward_station():
         sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
 
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
-
-# Initialize RGB LED
-LED_PIN_R = 22
-LED_PIN_G = 23
-LED_PIN_B = 24
-rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
-
-# Attach handlers
-first_encoder.when_rotated = update_volume
-second_encoder.when_rotated_clockwise = update_forward_station
-second_encoder.when_rotated_counter_clockwise = update_backward_station
-switch.when_pressed = on_button_press
 
 def monitor_playback():
     while True:
@@ -201,6 +258,14 @@ def nfc_listener():
             print(f"Error reading NFC tag: {e}")
         time.sleep(1)  # Delay between NFC reads
 
+
+
+# Attach handlers
+first_encoder.when_rotated = update_volume
+second_encoder.when_rotated_clockwise = update_forward_station
+second_encoder.when_rotated_counter_clockwise = update_backward_station
+switch.when_pressed = on_button_press
+
 playback_thread = threading.Thread(target=monitor_playback)
 playback_thread.daemon = True
 playback_thread.start()
@@ -211,9 +276,6 @@ nfc_thread.start()
 
 try:
     while True:
-        seekCount = random.randrange(1, 140000, 1)
-        positionCount = random.randrange(1, 20, 1)
-        check_for_single_press()
         time.sleep(0.01)  # Main loop delay
 finally:
     rgb_led.off()
