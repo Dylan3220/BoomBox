@@ -81,9 +81,6 @@ PLAYLIST_COLORS = [
     (0, 1, 1),  # Cyan
 ]
 
-def stop_led_blink():
-    rgb_led.off()
-
 def update_volume():
     global volume_led_timer
 
@@ -96,7 +93,7 @@ def update_volume():
         volume_led_timer.cancel()
     volume_level = new_volume / 100
     rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=3, background=True)
-    volume_led_timer = threading.Timer(3, stop_led_blink)
+    volume_led_timer = threading.Timer(3, rgb_led.off())
     volume_led_timer.start()
 
 def on_button_press():
@@ -104,8 +101,6 @@ def on_button_press():
 
     last_press_time = time.time()
     print("entered button function")
-
-    #print (time.time() - last_press_time)
 
     while (time.time() - last_press_time < DOUBLE_PRESS_TIME):
         print("im in the while loop")
@@ -117,75 +112,13 @@ def on_button_press():
             print("Button Double Pressed: Skipping Song")
             sp.next_track(device_id=SPOTIFY_DEVICE_ID)
             rgb_led.off()
-            #last_press_time = current_time
-            
-    #last_press_time = time.time()
-    
+
     print("Button Single Pressed: Toggle Pause/Play")
     current_playback = sp.current_playback()
     if current_playback and current_playback['is_playing']:
         sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
     else:
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-    
-    """
-    if current_time - last_press_time < DOUBLE_PRESS_TIME:
-        presstype = 1
-        print(current_time-last_press_time)
-
-    else:
-        presstype = 0
-        
-        time.sleep(.25)
-
-        if switch.is_pressed:
-            presstype = 1
-
-        else:
-            presstype = 0
-    
-    last_press_time = current_time
-
-    if presstype:
-        rgb_led.on()
-        print("Button Double Pressed: Skipping Song")
-        sp.next_track(device_id=SPOTIFY_DEVICE_ID)
-        rgb_led.off()
-
-    else:
-        print("Button Single Pressed: Toggle Pause/Play")
-        current_playback = sp.current_playback()
-        if current_playback and current_playback['is_playing']:
-            sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
-        else:
-            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-         #press_count = 0
-"""
-"""
-
-    if current_time - last_press_time < DOUBLE_PRESS_TIME:
-        press_count += 1
-        if press_count == 2:
-            rgb_led.on()
-            print("Button Double Pressed: Skipping Song")
-            sp.next_track(device_id=SPOTIFY_DEVICE_ID)
-            rgb_led.off()
-            press_count = 0
-    else:
-        press_count = 1
-
-    if time.time() - last_press_time >= SINGLE_PRESS_DELAY and press_count == 1:
-        print("Button Single Pressed: Toggle Pause/Play")
-        current_playback = sp.current_playback()
-        if current_playback and current_playback['is_playing']:
-            sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
-        else:
-            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-        press_count = 0
-
-    last_press_time = current_time 
-    
-    """
 
 def update_forward_station():
     global forward_encoder_count, current_playlist_index
