@@ -60,6 +60,8 @@ current_playlist_index = 0
 forward_encoder_count = 0
 backward_encoder_count = 0
 double_press_flag = 0
+last_played_uri = None
+
 
 # Hardcoded playlists
 PLAYLISTS = [
@@ -187,22 +189,25 @@ def monitor_playback():
         time.sleep(1)  # Check playback status every second
 
 def nfc_listener():
+    global last_played_uri
     while True:
         print("entered NFC loop")
+        print(last_played_uri)
         try:
             id, text = reader.read()
             text = text.strip()  # Remove any leading and trailing whitespace
             print(f"NFC tag detected with ID: {id} and text: {text}")
             current_uri = sp.current_playback()['context']['uri']
             print(current_uri)
-            if text == current_uri:
+            if text == current_uri or text == last_played_uri:
                 print("Current Playing Card")
-                #break
+                continue
             elif text.startswith("spotify:"):
                 try:
                     sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
                     sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
                     print(f"Playing Spotify URI: {text}")
+                    last_played_uri = text
                 except Exception as e:
                     print(f"Failed to play Spotify URI: {text} - {e}")
             else:
