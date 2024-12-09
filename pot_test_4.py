@@ -51,6 +51,7 @@ QUARTER_TURN_STEPS = 0.5  # Number of steps for a quarter turn of the encoder
 
 # Initialize variables
 last_press_time = 0
+last_skip_time = time.time()
 press_count = 0
 presstype = 0
 volume_led_timer = None
@@ -58,11 +59,12 @@ last_second_encoder_value = 0
 current_playlist_index = 0
 forward_encoder_count = 0
 backward_encoder_count = 0
+double_press_flag = 0
 
 # Hardcoded playlists
 PLAYLISTS = [
     'playlist:3OW97U4iSQIHFUXMRRh6Us', #Solid Shit 9/16
-    'playlist:37i9dQZF1DWXi7h4mmmkzD', #Country Nights 
+    'playlist:37i9dQZF1DWXi7h4mmmkzD', #Country Nights
     'playlist:37i9dQZF1DXb8wplbC2YhV', #100 Greates Hip-Hop Songs of the Streaming Era
     'playlist:37i9dQZF1DX0MLFaUdXnjA', #Chill Pop
     'playlist:37i9dQZF1DX17GkScaAekA', #Dark Acadamia Classical
@@ -89,37 +91,49 @@ def update_volume():
     sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
     print(f"Volume set to: {new_volume}%")
 
-    if volume_led_timer:
-        volume_led_timer.cancel()
-    volume_level = new_volume / 100
-    rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=3, background=True)
-    volume_led_timer = threading.Timer(3, rgb_led.off())
-    volume_led_timer.start()
+    #if volume_led_timer:
+    #    volume_led_timer.cancel()
+    #volume_level = new_volume / 100
+    #rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=3, background=True)
+    #volume_led_timer = threading.Timer(3, rgb_led.off())
+    #volume_led_timer.start()
+
 
 def on_button_press():
-    global last_press_time, press_count
+
+    global last_press_time, last_skip_time, press_count, double_press_flag
 
     last_press_time = time.time()
     print("entered button function")
 
     while (time.time() - last_press_time < DOUBLE_PRESS_TIME):
         print("im in the while loop")
+        print(double_press_flag)
         print (time.time() - last_press_time)
         #time.time() = time.time()
-        time.sleep(.1)
+        time.sleep(.125)
+        double_press_flag = 1
         if switch.is_pressed:
-            rgb_led.on()
+            #rgb_led.on()
             print("Button Double Pressed: Skipping Song")
             sp.next_track(device_id=SPOTIFY_DEVICE_ID)
-            rgb_led.off()
+            sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
+            last_skip_time = time.time()
+            #rgb_led.off()
+            double_press_flag = 0
+            break
 
-    print("Button Single Pressed: Toggle Pause/Play")
-    current_playback = sp.current_playback()
-    if current_playback and current_playback['is_playing']:
-        sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
-    else:
-        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+    if double_press_flag and last_press_time - last_skip_time > 5:
+        print("Button Single Pressed: Toggle Pause/Play")
+        current_playback = sp.current_playback()
+        if current_playback and current_playback['is_playing']:
+            sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+        else:
+            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)  
+    double_press_flag = 0
 
+
+ 
 def update_forward_station():
     global forward_encoder_count, current_playlist_index
     forward_encoder_count = forward_encoder_count + 1
@@ -137,7 +151,7 @@ def update_forward_station():
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
         sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
 
-        rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
+        #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
 def update_backward_station():
     global backward_encoder_count, current_playlist_index
@@ -156,29 +170,35 @@ def update_backward_station():
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
         sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
 
-        rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
+        #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
 def monitor_playback():
     while True:
         current_playback = sp.current_playback()
         if current_playback is None:
-            rgb_led.off()
+            #rgb_led.off()
             print("No playback detected. LED off.")
         elif 'is_playing' in current_playback and current_playback['is_playing']:
-            rgb_led.color = (.15, .15, .15)
+            #rgb_led.color = (.15, .15, .15)
             print("Playback is playing. LED on.")
         else:
-            rgb_led.off()
+            #rgb_led.off()
             print("Playback stopped. LED off.")
         time.sleep(1)  # Check playback status every second
 
 def nfc_listener():
     while True:
+        print("entered NFC loop")
         try:
             id, text = reader.read()
             text = text.strip()  # Remove any leading and trailing whitespace
             print(f"NFC tag detected with ID: {id} and text: {text}")
-            if text.startswith("spotify:"):
+            current_uri = sp.current_playback()['context']['uri']
+            print(current_uri)
+            if text == current_uri:
+                print("Current Playing Card")
+                #break
+            elif text.startswith("spotify:"):
                 try:
                     sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
                     sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
@@ -199,9 +219,9 @@ second_encoder.when_rotated_clockwise = update_forward_station
 second_encoder.when_rotated_counter_clockwise = update_backward_station
 switch.when_pressed = on_button_press
 
-playback_thread = threading.Thread(target=monitor_playback)
-playback_thread.daemon = True
-playback_thread.start()
+#playback_thread = threading.Thread(target=monitor_playback)
+#playback_thread.daemon = True
+#playback_thread.start()
 
 nfc_thread = threading.Thread(target=nfc_listener)
 nfc_thread.daemon = True
