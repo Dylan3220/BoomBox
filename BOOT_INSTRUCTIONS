@@ -15,6 +15,12 @@ MAKE SURE YOU ARE IN A PLACE WITH GOOD WIFI, NOT YOUR ROOM AT 844 PARK PLACE DIP
 
 go to your terminal on a laptop connected to the same wifi and type "ssh [your username]@raspberrypi.local" and enter the corresponding password
 
+enter the following command to install raspotify, this will turn your device into a spotify connect device
+
+  sudo apt-get -y install curl && curl -sL https://dtcooper.github.io/raspotify/install.sh | sh  
+
+this command may take a while to run, but be patient hoe
+
 enter the following command into bash
   sudo nano /boot/firmware/config.txt
 
@@ -23,3 +29,5 @@ then make sure the following line is set to off
 
 and make sure the following dtoverlay is set to hifiberry-digiamp
   dtoverlay=hifiberry-digiamp
+
+then reboot your pi and test the raspbotify 
