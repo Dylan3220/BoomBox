@@ -27,16 +27,16 @@ sp = Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIFY_CLIENT_ID,
 reader = SimpleMFRC522()
 
 # Define GPIO pins
-ENCODER_PIN_A = 17
-ENCODER_PIN_B = 27
-ENCODER_PIN_AA = 5
-ENCODER_PIN_BB = 6
-SWITCH_PIN = 20
+ENCODER_PIN_A = 2
+ENCODER_PIN_B = 3
+ENCODER_PIN_AA = 17
+ENCODER_PIN_BB = 27
+SWITCH_PIN = 4
 
 # Initialize RGB LED
-LED_PIN_R = 22
-LED_PIN_G = 23
-LED_PIN_B = 24
+LED_PIN_R = 0
+LED_PIN_G = 13
+LED_PIN_B = 26
 rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
 
 # Define Rotary Encoders and Button
