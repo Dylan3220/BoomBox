@@ -30,4 +30,12 @@ then make sure the following line is set to off
 and make sure the following dtoverlay is set to hifiberry-digiamp
   dtoverlay=hifiberry-digiamp
 
-then reboot your pi and test the raspbotify 
+then reboot your pi and test the raspotify
+
+run the following two commands to install neccesary python libraries
+  pip install spotipy --break-system-packages 
+  pip install mfrc522 --break-system-packages
+
+then go to your Documents folder and create a file called spotify_script.py, paste the contents of pot_test.py into that file
+
+
