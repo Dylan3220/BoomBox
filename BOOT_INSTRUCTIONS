@@ -14,3 +14,12 @@ Once the imager is done take out the sd card and put it into the raspberry pi
 MAKE SURE YOU ARE IN A PLACE WITH GOOD WIFI, NOT YOUR ROOM AT 844 PARK PLACE DIPSHIT
 
 go to your terminal on a laptop connected to the same wifi and type "ssh [your username]@raspberrypi.local" and enter the corresponding password
+
+enter the following command into bash
+  sudo nano /boot/firmware/config.txt
+
+then make sure the following line is set to off
+  dtparam=audio=off
+
+and make sure the following dtoverlay is set to hifiberry-digiamp
+  dtoverlay=hifiberry-digiamp
