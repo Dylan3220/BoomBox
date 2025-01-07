@@ -1,0 +1,16 @@
+Instructions on how to setup a Raspberry Pi Zero 2W for the Boom Box ... Lets get bumpin baby
+
+Download the Rasppbery Pi Imager
+  Select the Raspberry Pi Zero 2 W Board
+  Select the raspberry pi os lite
+  Select the sd card as the storage device, make sure everything important is off of the sd card because it will be erased
+  Edit the customization settings
+    enable ssh
+    create a username and password
+    input the SSID and the wifi password
+
+Once the imager is done take out the sd card and put it into the raspberry pi
+
+MAKE SURE YOU ARE IN A PLACE WITH GOOD WIFI, NOT YOUR ROOM AT 844 PARK PLACE DIPSHIT
+
+go to your terminal on a laptop connected to the same wifi and type "ssh [your username]@raspberrypi.local" and enter the corresponding password
