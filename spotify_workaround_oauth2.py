@@ -370,7 +370,6 @@ class SpotifyOAuth(SpotifyAuthBase):
             payload["show_dialog"] = True
 
         urlparams = urllibparse.urlencode(payload)
-        print(f"Encoded URL parameters: {urlparams}")
         url = f"{self.OAUTH_AUTHORIZE_URL}?{urlparams}"
         print(f"Full Authorization URL: {url}")
         
