@@ -14,7 +14,7 @@ SPOTIFY_SCOPE = 'user-modify-playback-state user-read-playback-state'
 CACHE_PATH = "/home/dylan/Documents/spotify_auth_cache2.json"
 
 # Hardcoded Spotify device ID
-SPOTIFY_DEVICE_ID = '98bb0735e28656bac098d927d410c3138a4b5bca'
+SPOTIFY_DEVICE_ID = '450e2594318bbcc1e41ca3e88136e118c51a6dcb'
 
 # Initialize Spotipy
 sp = Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIFY_CLIENT_ID,
