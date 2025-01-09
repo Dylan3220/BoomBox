@@ -38,6 +38,18 @@ run the following two commands to install neccesary python libraries
   pip install spotipy --break-system-packages 
   pip install mfrc522 --break-system-packages
 
+type this into your terminal to find the location of the spotipy library
+  pip show spotipy
+
+navigate to the oauth2.py file in the spotipy library go into the nano editor
+
+navigate to the Spotify0Auth class and the get_authorize_url definition, add the following lines just before the return statement
+
+  url = f"{self.OAUTH_AUTHORIZE_URL}?{urlparams}"
+  print(f"Full Authorization URL: {url}")
+
 then go to your Documents folder and create a file called spotify_script.py, paste the contents of pot_test.py into that file
+
+
 
 
