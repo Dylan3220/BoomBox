@@ -33,6 +33,7 @@ and make sure the following dtoverlay is set to hifiberry-digiamp
 then reboot your pi and test the raspotify
 
 run the following two commands to install neccesary python libraries
+  sudo apt install python3-pip
   pip install spotipy --break-system-packages 
   pip install mfrc522 --break-system-packages
 
