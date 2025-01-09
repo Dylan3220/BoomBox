@@ -26,6 +26,7 @@ enter the following command into bash
 
 then make sure the following line is set to off
   dtparam=audio=off
+  dtparam=spi=on
 
 and make sure the following dtoverlay is set to hifiberry-digiamp
   dtoverlay=hifiberry-digiamp
