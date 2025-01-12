@@ -5,6 +5,7 @@ import time
 import threading
 import random
 from mfrc522 import SimpleMFRC522
+import RPi.GPIO as GPIO
 
 # Spotify credentials and scope
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -27,8 +28,8 @@ sp = Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIFY_CLIENT_ID,
 reader = SimpleMFRC522()
 
 # Define GPIO pins
-ENCODER_PIN_A = 2
-ENCODER_PIN_B = 3
+ENCODER_PIN_A = 15
+ENCODER_PIN_B = 14
 ENCODER_PIN_AA = 17
 ENCODER_PIN_BB = 27
 SWITCH_PIN = 4
@@ -237,3 +238,4 @@ try:
         time.sleep(0.01)  # Main loop delay
 finally:
     rgb_led.off()
+    GPIO.cleanup()
