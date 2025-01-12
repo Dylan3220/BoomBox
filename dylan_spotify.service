@@ -1,0 +1,13 @@
+[Unit]
+Description=Network music player
+Wants=network-online.target
+After=network-online.target
+Requires=mpd.target
+
+[Service]
+Type=simple
+ExecStart=python3 /home/diego/spotify_script.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target graphical.target
