@@ -1,13 +1,14 @@
 [Unit]
-Description=Network music player
-Wants=network-online.target
-After=network-online.target
-Requires=mpd.target
+Description=Run the python script on boot that controls the radio
+After=multi-user.target
+Requires=network.target
 
 [Service]
-Type=simple
-ExecStart=python3 /home/diego/spotify_script.py
-Restart=on-failure
+Type=idle
+User=diego
+ExecStart=/diego/bin/python /home/diego/spotify_script.py
+Restart=always
+RestartSec=5
 
 [Install]
-WantedBy=multi-user.target graphical.target
+WantedBy=multi-user.target
