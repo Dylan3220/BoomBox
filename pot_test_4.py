@@ -12,7 +12,7 @@ SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
 SPOTIFY_CLIENT_SECRET = 'e5a112f992ee43e9bbea57b8c19b053b'
 SPOTIFY_REDIRECT_URI = 'http://10.0.0.217:8080/auth-response/'
 SPOTIFY_SCOPE = 'user-modify-playback-state user-read-playback-state'
-CACHE_PATH = "/home/dylan/Documents/spotify_auth_cache2.json"
+CACHE_PATH = "/home/diego/spotify_auth_cache2.json"
 
 # Hardcoded Spotify device ID
 SPOTIFY_DEVICE_ID = '450e2594318bbcc1e41ca3e88136e118c51a6dcb'
