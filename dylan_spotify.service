@@ -1,14 +1,19 @@
 [Unit]
 Description=Run the python script on boot that controls the radio
 After=multi-user.target
-Requires=network.target
+After=network.target
 
 [Service]
 Type=idle
 User=diego
-ExecStart=/diego/bin/python /home/diego/spotify_script.py
+WorkingDirectory =/home/diego
+ExecStart=/bin/python /home/diego/spotify_script.py
+Environment="PATH=/usr/local/bin:/bin"
+Environment="PYTHONPATH=/home/diego/.local/lib/python3.9/site-packages"
 Restart=always
 RestartSec=5
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
