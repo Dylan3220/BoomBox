@@ -41,7 +41,7 @@ run the following two commands to install neccesary python libraries
 type this into your terminal to find the location of the spotipy library
   pip show spotipy
 
-navigate to the oauth2.py file in the spotipy library go into the nano editor
+navigate to the oauth2.py file in the spotipy library go into the nano editor, navigate to line 372
 
 navigate to the Spotify0Auth class and the get_authorize_url definition, add the following lines just before the return statement
 
@@ -50,6 +50,11 @@ navigate to the Spotify0Auth class and the get_authorize_url definition, add the
 
 then go to your Documents folder and create a file called spotify_script.py, paste the contents of pot_test.py into that file
 
+create a service file to run the spotify_script.py, run the following command and paste the contents of dylan_spotify.service into it
+
+  sudo nano /etc/systemd/system/dylan_spotify.service
+  sudo systemctl enable dylan_spotify.service
+  sudo systemctl daemon-reload
 
 
 
