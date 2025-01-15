@@ -188,15 +188,15 @@ def monitor_playback():
     global current_playback
     while True:
         current_playback = sp.current_playback()
-        if current_playback is None:
+        #if current_playback is None:
             #rgb_led.off()
-            print("No playback detected. LED off.")
-        elif 'is_playing' in current_playback and current_playback['is_playing']:
+            #print("No playback detected. LED off.")
+        #elif 'is_playing' in current_playback and current_playback['is_playing']:
             #rgb_led.color = (.15, .15, .15)
-            print("Playback is playing. LED on.")
-        else:
+            #print("Playback is playing. LED on.")
+        #else:
             #rgb_led.off()
-            print("Playback stopped. LED off.")
+            #print("Playback stopped. LED off.")
         time.sleep(1)  # Check playback status every second
 
 def nfc_listener():
@@ -239,9 +239,9 @@ playback_thread = threading.Thread(target=monitor_playback)
 playback_thread.daemon = True
 playback_thread.start()
 
-nfc_thread = threading.Thread(target=nfc_listener)
-nfc_thread.daemon = True
-nfc_thread.start()
+#nfc_thread = threading.Thread(target=nfc_listener)
+#nfc_thread.daemon = True
+#nfc_thread.start()
 
 try:
     while True:
