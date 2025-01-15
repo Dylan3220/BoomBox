@@ -102,9 +102,9 @@ def update_volume():
     #volume_led_timer.start()
 
 
-def on_button_press():
+def on_button_press():   
 
-    global last_press_time, last_skip_time, press_count, double_press_flag
+    global last_press_time, last_skip_time, press_count, double_press_flag, current_playback
 
     last_press_time = time.time()
     print("entered button function")
@@ -124,16 +124,17 @@ def on_button_press():
             last_skip_time = time.time()
             #rgb_led.off()
             double_press_flag = 0
-            break
+            break 
 
     if double_press_flag and last_press_time - last_skip_time > 5:
         print("Button Single Pressed: Toggle Pause/Play")
-        current_playback = sp.current_playback()
+        #current_playback = sp.current_playback()
         if current_playback and current_playback['is_playing']:
             sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
         else:
             sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)  
     double_press_flag = 0
+    
 
 
  
@@ -176,6 +177,7 @@ def update_backward_station():
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
 def monitor_playback():
+    global current_playback
     while True:
         current_playback = sp.current_playback()
         if current_playback is None:
