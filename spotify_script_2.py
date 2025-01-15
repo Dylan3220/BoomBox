@@ -106,7 +106,15 @@ def on_button_press():
 
     global last_press_time, last_skip_time, press_count, double_press_flag, current_playback
 
-    last_press_time = time.time()
+    if current_playback['is_playing'] == True:
+      sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+
+    elif current_playback['is_playing'] == False:
+      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+    else:
+      print("Nothing Happened IDK man")
+  
+    """last_press_time = time.time()
     print("entered button function")
 
     while (time.time() - last_press_time < DOUBLE_PRESS_TIME):
@@ -133,7 +141,7 @@ def on_button_press():
             sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
         else:
             sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)  
-    double_press_flag = 0
+    double_press_flag = 0"""
     
 
 
