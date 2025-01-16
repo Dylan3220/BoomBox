@@ -230,7 +230,6 @@ def nfc_listener():
       else:
         print(f"Invalid Spotify URI: {text}")
         time.sleep(1)  # Delay between NFC reads
-    
   except:
     exit()
 
