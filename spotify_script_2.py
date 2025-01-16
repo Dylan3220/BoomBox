@@ -169,7 +169,7 @@ def update_forward_station():
         print(f"Switching to playlist: {playlist_id}")
 
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
 
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
@@ -188,7 +188,7 @@ def update_backward_station():
         print(f"Switching to playlist: {playlist_id}")
 
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
 
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
