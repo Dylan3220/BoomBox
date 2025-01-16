@@ -164,14 +164,14 @@ def update_forward_station():
 
     try:
       if forward_encoder_count > 4:
-          forward_encoder_count = 1
-          current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
-          playlist_id = PLAYLISTS[current_playlist_index]
+        forward_encoder_count = 1
+        current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
+        playlist_id = PLAYLISTS[current_playlist_index]
   
-          print(f"Switching to playlist: {playlist_id}")
+        print(f"Switching to playlist: {playlist_id}")
   
-          sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
-          sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
+        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
     except:
         exit()
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
