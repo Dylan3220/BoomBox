@@ -197,6 +197,7 @@ def monitor_playback():
     try:
       while True:
           current_playback = sp.current_playback()
+          print(current_playback['is_playing'])
           time.sleep(1)  # Check playback status every second
     except:
       print("error in monitor playback")
