@@ -88,12 +88,13 @@ PLAYLIST_COLORS = [
 
 def update_volume():
     global volume_led_timer
-
-    p_encoder_value = first_encoder.value
-    new_volume = int(50 + 50 * p_encoder_value)
-    sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
-    print(f"Volume set to: {new_volume}%")
-
+    try:
+      p_encoder_value = first_encoder.value
+      new_volume = int(50 + 50 * p_encoder_value)
+      sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
+      print(f"Volume set to: {new_volume}%")
+    except:
+      exit()
     #if volume_led_timer:
     #    volume_led_timer.cancel()
     #volume_level = new_volume / 100
@@ -120,7 +121,7 @@ def on_button_press():
     except:
       print("entered pause/play except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-
+      exit()
   
     """last_press_time = time.time()
     print("entered button function")
@@ -161,16 +162,18 @@ def update_forward_station():
     seekCount = random.randrange(1, 140000, 1)
     positionCount = random.randrange(1, 20, 1)
 
-    if forward_encoder_count > 4:
-        forward_encoder_count = 1
-        current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
-        playlist_id = PLAYLISTS[current_playlist_index]
-
-        print(f"Switching to playlist: {playlist_id}")
-
-        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
-        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
-
+    try:
+      if forward_encoder_count > 4:
+          forward_encoder_count = 1
+          current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
+          playlist_id = PLAYLISTS[current_playlist_index]
+  
+          print(f"Switching to playlist: {playlist_id}")
+  
+          sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
+          sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+      except:
+        exit()
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
 def update_backward_station():
@@ -179,17 +182,18 @@ def update_backward_station():
     print(f"Backward encoder count: {backward_encoder_count}")
     seekCount = random.randrange(1, 140000, 1)
     positionCount = random.randrange(1, 20, 1)
-
-    if backward_encoder_count > 4:
-        backward_encoder_count = 1
-        current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
-        playlist_id = PLAYLISTS[current_playlist_index]
-
-        print(f"Switching to playlist: {playlist_id}")
-
-        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
-        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
-
+    try:
+      if backward_encoder_count > 4:
+          backward_encoder_count = 1
+          current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
+          playlist_id = PLAYLISTS[current_playlist_index]
+  
+          print(f"Switching to playlist: {playlist_id}")
+  
+          sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
+          sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+      except:
+        exit()
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
 def monitor_playback():
@@ -205,26 +209,29 @@ def monitor_playback():
 
 def nfc_listener():
     global last_played_uri
-    while True:
-        print("entered NFC loop")
-        print(last_played_uri)
-        id, text = reader.read()
-        text = text.strip()  # Remove any leading and trailing whitespace
-        print(f"NFC tag detected with ID: {id} and text: {text}")
-        current_uri = sp.current_playback()['context']['uri']
-        print(current_uri)
-        if text == current_uri or text == last_played_uri:
-            print("Current Playing Card")
-            continue
-        elif text.startswith("spotify:"):
-                sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-                sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-                print(f"Playing Spotify URI: {text}")
-                last_played_uri = text
-        else:
-            print(f"Invalid Spotify URI: {text}")
-
-        time.sleep(1)  # Delay between NFC reads
+    try:
+      while True:
+          print("entered NFC loop")
+          print(last_played_uri)
+          id, text = reader.read()
+          text = text.strip()  # Remove any leading and trailing whitespace
+          print(f"NFC tag detected with ID: {id} and text: {text}")
+          current_uri = sp.current_playback()['context']['uri']
+          print(current_uri)
+          if text == current_uri or text == last_played_uri:
+              print("Current Playing Card")
+              continue
+          elif text.startswith("spotify:"):
+                  sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+                  sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+                  print(f"Playing Spotify URI: {text}")
+                  last_played_uri = text
+          else:
+              print(f"Invalid Spotify URI: {text}")
+  
+          time.sleep(1)  # Delay between NFC reads
+        except:
+          exit()
 
 
 
