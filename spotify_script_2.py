@@ -204,27 +204,22 @@ def nfc_listener():
     while True:
         print("entered NFC loop")
         print(last_played_uri)
-        try:
-            id, text = reader.read()
-            text = text.strip()  # Remove any leading and trailing whitespace
-            print(f"NFC tag detected with ID: {id} and text: {text}")
-            current_uri = sp.current_playback()['context']['uri']
-            print(current_uri)
-            if text == current_uri or text == last_played_uri:
-                print("Current Playing Card")
-                continue
-            elif text.startswith("spotify:"):
-                try:
-                    sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-                    sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-                    print(f"Playing Spotify URI: {text}")
-                    last_played_uri = text
-                except Exception as e:
-                    print(f"Failed to play Spotify URI: {text} - {e}")
-            else:
-                print(f"Invalid Spotify URI: {text}")
-        except Exception as e:
-            print(f"Error reading NFC tag: {e}")
+        id, text = reader.read()
+        text = text.strip()  # Remove any leading and trailing whitespace
+        print(f"NFC tag detected with ID: {id} and text: {text}")
+        current_uri = sp.current_playback()['context']['uri']
+        print(current_uri)
+        if text == current_uri or text == last_played_uri:
+            print("Current Playing Card")
+            continue
+        elif text.startswith("spotify:"):
+                sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+                sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+                print(f"Playing Spotify URI: {text}")
+                last_played_uri = text
+        else:
+            print(f"Invalid Spotify URI: {text}")
+
         time.sleep(1)  # Delay between NFC reads
 
 
