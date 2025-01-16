@@ -209,6 +209,7 @@ def monitor_playback():
 
 def nfc_listener():
   global last_played_uri
+  
   try:
     while True:
       print("entered NFC loop")
@@ -229,8 +230,9 @@ def nfc_listener():
       else:
         print(f"Invalid Spotify URI: {text}")
         time.sleep(1)  # Delay between NFC reads
-    except:
-      exit()
+    
+  except:
+    exit()
 
 
 
