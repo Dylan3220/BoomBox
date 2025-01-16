@@ -249,3 +249,4 @@ try:
 finally:
     rgb_led.off()
     GPIO.cleanup()
+    exit()
