@@ -186,18 +186,13 @@ def update_backward_station():
 
 def monitor_playback():
     global current_playback
-    while True:
-        current_playback = sp.current_playback()
-        #if current_playback is None:
-            #rgb_led.off()
-            #print("No playback detected. LED off.")
-        #elif 'is_playing' in current_playback and current_playback['is_playing']:
-            #rgb_led.color = (.15, .15, .15)
-            #print("Playback is playing. LED on.")
-        #else:
-            #rgb_led.off()
-            #print("Playback stopped. LED off.")
-        time.sleep(1)  # Check playback status every second
+    try:
+      while True:
+          current_playback = sp.current_playback()
+          time.sleep(1)  # Check playback status every second
+    except:
+      print("error in monitor playback")
+      exit()
 
 def nfc_listener():
     global last_played_uri
