@@ -35,10 +35,10 @@ ENCODER_PIN_BB = 27
 SWITCH_PIN = 4
 
 # Initialize RGB LED
-LED_PIN_R = 0
-LED_PIN_G = 13
-LED_PIN_B = 26
-rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
+#LED_PIN_R = 0
+#LED_PIN_G = 13
+#LED_PIN_B = 26
+#rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
 
 # Define Rotary Encoders and Button
 first_encoder = RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, wrap=False, max_steps=10)
