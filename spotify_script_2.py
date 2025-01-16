@@ -238,10 +238,5 @@ nfc_thread = threading.Thread(target=nfc_listener)
 nfc_thread.daemon = True
 nfc_thread.start()
 
-try:
-    while True:
-        time.sleep(0.01)  # Main loop delay
-finally:
-    #rgb_led.off()
-    GPIO.cleanup()
-    exit()
+while True:
+    time.sleep(0.01)  # Main loop delay
