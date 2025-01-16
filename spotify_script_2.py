@@ -239,9 +239,9 @@ playback_thread = threading.Thread(target=monitor_playback)
 playback_thread.daemon = True
 playback_thread.start()
 
-#nfc_thread = threading.Thread(target=nfc_listener)
-#nfc_thread.daemon = True
-#nfc_thread.start()
+nfc_thread = threading.Thread(target=nfc_listener)
+nfc_thread.daemon = True
+nfc_thread.start()
 
 try:
     while True:
