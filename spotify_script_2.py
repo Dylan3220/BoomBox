@@ -247,6 +247,6 @@ try:
     while True:
         time.sleep(0.01)  # Main loop delay
 finally:
-    rgb_led.off()
+    #rgb_led.off()
     GPIO.cleanup()
     exit()
