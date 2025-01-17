@@ -200,13 +200,13 @@ def monitor_playback():
     global current_playback
     
     while True:
-    try:
-      current_playback = sp.current_playback()
-      print(current_playback['is_playing'])
-      time.sleep(1)  # Check playback status every second
-    except:
-      print("error in monitor playback")
-      continue
+      try:
+        current_playback = sp.current_playback()
+        print(current_playback['is_playing'])
+        time.sleep(1)  # Check playback status every second
+      except:
+        print("error in monitor playback")
+        continue
 
 def nfc_listener():
     global last_played_uri
