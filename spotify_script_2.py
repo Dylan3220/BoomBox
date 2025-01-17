@@ -227,9 +227,9 @@ def nfc_listener():
             sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
             print(f"Playing Spotify URI: {text}")
             last_played_uri = text
-          else:
-            print(f"Invalid Spotify URI: {text}")
-            time.sleep(1)  # Delay between NFC reads
+          #else:
+          #  print(f"Invalid Spotify URI: {text}")
+          #  time.sleep(1)  # Delay between NFC reads
     except:
       exit()
     
