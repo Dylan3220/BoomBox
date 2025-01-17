@@ -223,7 +223,7 @@ def nfc_listener():
             print("Current Playing Card")
             continue
           elif text.startswith("spotify:"):
-            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
             sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
             print(f"Playing Spotify URI: {text}")
             last_played_uri = text
