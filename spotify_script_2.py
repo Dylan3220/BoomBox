@@ -106,14 +106,15 @@ def update_volume():
 def on_button_press():   
 
     global last_press_time, last_skip_time, press_count, double_press_flag, current_playback
+    current_playback = sp.current_playback()
 
     try:
       
-      if sp.current_playback['is_playing'] == True:
+      if current_playback['is_playing'] == True:
         print("entered pause statement")
         sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
   
-      elif sp.current_playback['is_playing'] == False:
+      elif current_playback['is_playing'] == False:
         print("entered play statement")
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
     except:
