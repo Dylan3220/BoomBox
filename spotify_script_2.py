@@ -116,8 +116,6 @@ def on_button_press():
       elif current_playback['is_playing'] == False:
         print("entered play statement")
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-      else:
-        print("Nothing Happened IDK man")
     except:
       print("entered pause/play except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
