@@ -88,13 +88,11 @@ PLAYLIST_COLORS = [
 
 def update_volume():
     global volume_led_timer
-    try:
-      p_encoder_value = first_encoder.value
-      new_volume = int(50 + 50 * p_encoder_value)
-      sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
-      print(f"Volume set to: {new_volume}%")
-    except:
-      exit()
+    p_encoder_value = first_encoder.value
+    new_volume = int(50 + 50 * p_encoder_value)
+    sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
+    print(f"Volume set to: {new_volume}%")
+
     #if volume_led_timer:
     #    volume_led_timer.cancel()
     #volume_level = new_volume / 100
