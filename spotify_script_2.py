@@ -240,9 +240,9 @@ first_encoder.when_rotated = update_volume
 #second_encoder.when_rotated_counter_clockwise = update_backward_station
 #switch.when_pressed = on_button_press
 
-#playback_thread = threading.Thread(target=monitor_playback)
-#playback_thread.daemon = True
-#playback_thread.start()
+playback_thread = threading.Thread(target=monitor_playback)
+playback_thread.daemon = True
+playback_thread.start()
 
 #nfc_thread = threading.Thread(target=nfc_listener)
 #nfc_thread.daemon = True
