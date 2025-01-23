@@ -15,9 +15,12 @@ MAKE SURE YOU ARE IN A PLACE WITH GOOD WIFI, NOT YOUR ROOM AT 844 PARK PLACE DIP
 
 go to your terminal on a laptop connected to the same wifi and type "ssh [your username]@raspberrypi.local" and enter the corresponding password
 
-enter the following command to install raspotify, this will turn your device into a spotify connect device
+enter the following commands to install raspotify (this will turn your device into a spotify connect device), pip, spotipy, and mfrc522
 
   sudo apt-get -y install curl && curl -sL https://dtcooper.github.io/raspotify/install.sh | sh  
+  sudo apt install python3-pip
+  pip install spotipy --break-system-packages 
+  pip install mfrc522 --break-system-packages
 
 this command may take a while to run, but be patient hoe
 
@@ -27,16 +30,13 @@ enter the following command into bash
 then make sure the following line is set to off
   dtparam=audio=off
   dtparam=spi=on
+  dtparam=i2c_arm=on
+  dtparam=i2c=on
 
 and make sure the following dtoverlay is set to hifiberry-digiamp
   dtoverlay=hifiberry-digiamp
 
 then reboot your pi and test the raspotify
-
-run the following two commands to install neccesary python libraries
-  sudo apt install python3-pip
-  pip install spotipy --break-system-packages 
-  pip install mfrc522 --break-system-packages
 
 type this into your terminal to find the location of the spotipy library
   pip show spotipy
@@ -48,11 +48,13 @@ navigate to the Spotify0Auth class and the get_authorize_url definition, add the
   url = f"{self.OAUTH_AUTHORIZE_URL}?{urlparams}"
   print(f"Full Authorization URL: {url}")
 
-then go to your Documents folder and create a file called spotify_script.py, paste the contents of pot_test.py into that file
+then sype the following command to open a text editor and create a file called downtown.sh, when you run this file it will download the spotify_script_2.py and dylan_spotify.service file from this repo onto your raspberry pi
 
-create a service file to run the spotify_script.py, run the following command and paste the contents of dylan_spotify.service into it
+sudo wget -O /home/diego/downtown.sh https://raw.githubusercontent.com/Dylan3220/BoomBox/main/downtown.sh 
 
-  sudo nano /etc/systemd/system/dylan_spotify.service
+
+copy the contents of downtown.sh into this file 
+
   sudo systemctl enable dylan_spotify.service
   sudo systemctl daemon-reload
 
