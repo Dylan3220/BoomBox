@@ -25,7 +25,7 @@ sp = Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIFY_CLIENT_ID,
                                        cache_path=CACHE_PATH))
 
 # Initialize MFRC522
-#reader = SimpleMFRC522()
+reader = SimpleMFRC522()
 
 # Define GPIO pins
 ENCODER_PIN_A = 15
