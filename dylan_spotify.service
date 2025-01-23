@@ -7,7 +7,7 @@ After=network.target
 Type=idle
 User=diego
 WorkingDirectory =/home/diego
-ExecStart=/bin/python /home/diego/spotify_script.py
+ExecStart=/bin/python /home/diego/spotify_script_2.py
 #Environment="PATH=/usr/local/bin:/bin"
 #Environment="PYTHONPATH=/home/diego/.local/lib/python3.9/site-packages"
 Restart=always
