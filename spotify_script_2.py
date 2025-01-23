@@ -8,8 +8,8 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 
 # Spotify credentials and scope
-SPOTIFY_CLIENT_ID = 'ecdcc99fe00c4aacb228149b40f36365'
-SPOTIFY_CLIENT_SECRET = '1e04da178a0e4cc0b100f3acff142d98'
+SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
+SPOTIFY_CLIENT_SECRET = 'e5a112f992ee43e9bbea57b8c19b053b'
 SPOTIFY_REDIRECT_URI = 'http://10.0.0.217:8080/auth-response/'
 SPOTIFY_SCOPE = 'user-modify-playback-state user-read-playback-state'
 CACHE_PATH = "/home/diego/spotify_auth_cache2.json"
