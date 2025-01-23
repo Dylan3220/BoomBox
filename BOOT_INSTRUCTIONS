@@ -50,10 +50,12 @@ navigate to the Spotify0Auth class and the get_authorize_url definition, add the
 
 then sype the following command to open a text editor and create a file called downtown.sh, when you run this file it will download the spotify_script_2.py and dylan_spotify.service file from this repo onto your raspberry pi
 
-sudo wget -O /home/diego/downtown.sh https://raw.githubusercontent.com/Dylan3220/BoomBox/main/downtown.sh 
+  sudo wget -O /home/diego/downtown.sh https://raw.githubusercontent.com/Dylan3220/BoomBox/main/downtown.sh 
 
+then run the following command to download the rest of the contents of the git hub
+  ./downtown.sh
 
-copy the contents of downtown.sh into this file 
+run these commands to enable the .service file
 
   sudo systemctl enable dylan_spotify.service
   sudo systemctl daemon-reload
