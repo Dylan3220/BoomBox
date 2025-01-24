@@ -117,6 +117,7 @@ def on_button_press():
       if current_playback['is_playing'] == True:
         print("entered pause statement")
         sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+        exit()
   
       elif current_playback['is_playing'] == False:
         print("entered play statement")
