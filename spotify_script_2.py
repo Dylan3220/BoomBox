@@ -108,9 +108,9 @@ def on_button_press():
 
     global last_press_time, last_skip_time, press_count, double_press_flag
     
-
+    current_playback = sp.current_playback()
     try:
-      current_playback = sp.current_playback()
+      
       print("current playback is")
       print(current_playback['is_playing'])
     
