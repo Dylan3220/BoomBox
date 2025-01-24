@@ -108,17 +108,17 @@ def on_button_press():
 
     global last_press_time, last_skip_time, press_count, double_press_flag
     
-    current_playback = sp.current_playback()
+    #current_playback = sp.current_playback()
     try:
       
       print("current playback is")
-      print(current_playback['is_playing'])
+      print(sp.current_playback(['is_playing']))
     
-      if current_playback['is_playing'] == True:
+      if sp.current_playback(['is_playing']) == True:
         print("entered pause statement")
         sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
   
-      elif current_playback['is_playing'] == False:
+      elif sp.current_playback(['is_playing']) == False:
         print("entered play statement")
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
         sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
