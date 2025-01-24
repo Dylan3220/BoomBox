@@ -178,6 +178,7 @@ def update_forward_station():
   
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
         sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
     except:
       exit()
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
@@ -190,14 +191,15 @@ def update_backward_station():
     positionCount = random.randrange(1, 20, 1)
     try:
       if backward_encoder_count > 4:
-          backward_encoder_count = 1
-          current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
-          playlist_id = PLAYLISTS[current_playlist_index]
-  
-          print(f"Switching to playlist: {playlist_id}")
-  
-          sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
-          sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        backward_encoder_count = 1
+        current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
+        playlist_id = PLAYLISTS[current_playlist_index]
+
+        print(f"Switching to playlist: {playlist_id}")
+
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
+        sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
     except:
       exit()
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
