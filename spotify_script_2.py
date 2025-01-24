@@ -111,6 +111,8 @@ def on_button_press():
 
     try:
       current_playback = sp.current_playback()
+      print("current playback is")
+      print(current_playback['is_playing'])
     
       if current_playback['is_playing'] == True:
         print("entered pause statement")
