@@ -238,6 +238,8 @@ def nfc_listener():
           elif text.startswith("spotify:"):
             sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
             sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+            time.sleep(2)
+            sp.start_playback()
             print(f"Playing Spotify URI: {text}")
             last_played_uri = text
           #else:
