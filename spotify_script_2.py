@@ -118,10 +118,10 @@ def on_button_press():
   
       elif current_playback['is_playing'] == False:
         print("entered play statement")
-        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+        sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
     except:
       print("entered pause/play except statement")
-      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
       exit()
   
     """last_press_time = time.time()
