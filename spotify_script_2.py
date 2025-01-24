@@ -117,13 +117,13 @@ def on_button_press():
       if current_playback['is_playing'] == True:
         print("entered pause statement")
         sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
-        exit()
+        break()
   
       elif current_playback['is_playing'] == False:
         print("entered play statement")
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
         sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
-        exit()
+        break()
     except:
       print("entered pause/play except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
