@@ -15,50 +15,14 @@ MAKE SURE YOU ARE IN A PLACE WITH GOOD WIFI, NOT YOUR ROOM AT 844 PARK PLACE DIP
 
 go to your terminal on a laptop connected to the same wifi and type "ssh [your username]@raspberrypi.local" and enter the corresponding password
 
-enter the following commands to install raspotify (this will turn your device into a spotify connect device), pip, spotipy, and mfrc522
+enter the following commands to install a script from my Github, this script will install all the necessary libraries, alter the config of the pi, and setup all the service files
+  
+  sudo wget -O /home/diego/setup.sh https://raw.githubusercontent.com/Dylan3220/BoomBox/main/setup.sh
+  sudo chmod +x /home/diego/setup.sh
+  ./setup.sh
+  sudo reboot
 
-  sudo apt-get -y install curl && curl -sL https://dtcooper.github.io/raspotify/install.sh | sh  
-  sudo apt install python3-pip
-  pip install spotipy --break-system-packages 
-  pip install mfrc522 --break-system-packages
 
-this command may take a while to run, but be patient hoe
-
-enter the following command into bash
-  sudo nano /boot/firmware/config.txt
-
-then make sure the following line is set to off
-  dtparam=audio=off
-  dtparam=spi=on
-  dtparam=i2c_arm=on
-  dtparam=i2c=on
-
-and make sure the following dtoverlay is set to hifiberry-digiamp
-  dtoverlay=hifiberry-digiamp
-
-then reboot your pi and test the raspotify
-
-type this into your terminal to find the location of the spotipy library
-  pip show spotipy
-
-navigate to the oauth2.py file in the spotipy library go into the nano editor, navigate to line 372
-
-navigate to the Spotify0Auth class and the get_authorize_url definition, add the following lines just before the return statement
-
-  url = f"{self.OAUTH_AUTHORIZE_URL}?{urlparams}"
-  print(f"Full Authorization URL: {url}")
-
-then sype the following command to open a text editor and create a file called downtown.sh, when you run this file it will download the spotify_script_2.py and dylan_spotify.service file from this repo onto your raspberry pi
-
-  sudo wget -O /home/diego/downtown.sh https://raw.githubusercontent.com/Dylan3220/BoomBox/main/downtown.sh 
-
-then run the following command to download the rest of the contents of the git hub
-  ./downtown.sh
-
-run these commands to enable the .service file
-
-  sudo systemctl enable dylan_spotify.service
-  sudo systemctl daemon-reload
 
 
 
