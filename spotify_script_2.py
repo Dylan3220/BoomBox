@@ -94,7 +94,7 @@ def update_volume():
     sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
     print(f"Volume set to: {new_volume}%")
     volume_level = new_volume / 100
-    rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=3, background=True)
+    rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=1, background=True)
 
  #   except:
  #     exit()
@@ -110,7 +110,7 @@ def update_volume():
 def on_button_press():   
 
     global last_press_time, last_skip_time, press_count, double_press_flag
-    rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 0, 1), n=3, background=True)
+    rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 0, 1), n=1, background=True)
 
     
     try:
@@ -176,7 +176,7 @@ def update_forward_station():
     try:
       if forward_encoder_count > 4:
         forward_encoder_count = 1
-        rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 1, 0), n=3, background=True)
+        rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 1, 0), n=1, background=True)
         current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
   
@@ -200,7 +200,7 @@ def update_backward_station():
     try:
       if backward_encoder_count > 4:
         backward_encoder_count = 1
-        rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 0, 0), n=3, background=True)
+        rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 0, 0), n=1, background=True)
         current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
 
@@ -236,7 +236,7 @@ def nfc_listener():
           id, text = reader.read()
           text = text.strip()  # Remove any leading and trailing whitespace
           print(f"NFC tag detected with ID: {id} and text: {text}")
-          rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=3, background=True)
+          rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
           current_uri = sp.current_playback()['context']['uri']
           print(current_uri)
           if text == "MFRC_TRIGGER":
