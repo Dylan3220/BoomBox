@@ -240,7 +240,9 @@ def nfc_listener():
               text = text.strip()
               if text == "MFRC_TRIGGER":
                 print("exiting mapping mode")
+                time.sleep(5)
                 break
+              reader.write(current_uri)
           if text == current_uri or text == last_played_uri:
             print("Current Playing Card")
             continue
