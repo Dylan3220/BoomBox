@@ -35,10 +35,10 @@ ENCODER_PIN_BB = 27
 SWITCH_PIN = 4
 
 # Initialize RGB LED
-#LED_PIN_R = 0
-#LED_PIN_G = 13
-#LED_PIN_B = 26
-#rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
+LED_PIN_R = 0
+LED_PIN_G = 13
+LED_PIN_B = 26
+rgb_led = RGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B)
 
 # Define Rotary Encoders and Button
 first_encoder = RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, wrap=False, max_steps=10)
@@ -93,6 +93,9 @@ def update_volume():
     new_volume = int(50 + 50 * p_encoder_value)
     sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
     print(f"Volume set to: {new_volume}%")
+    volume_level = new_volume / 100
+    rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=3, background=True)
+
  #   except:
  #     exit()
 
@@ -107,7 +110,8 @@ def update_volume():
 def on_button_press():   
 
     global last_press_time, last_skip_time, press_count, double_press_flag
-    
+    rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 0, 1), n=3, background=True)
+
     
     try:
       current_playback = sp.current_playback()
@@ -172,6 +176,7 @@ def update_forward_station():
     try:
       if forward_encoder_count > 4:
         forward_encoder_count = 1
+        rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 1, 0), n=3, background=True)
         current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
   
@@ -195,6 +200,7 @@ def update_backward_station():
     try:
       if backward_encoder_count > 4:
         backward_encoder_count = 1
+        rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 0, 0), n=3, background=True)
         current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
 
@@ -230,11 +236,13 @@ def nfc_listener():
           id, text = reader.read()
           text = text.strip()  # Remove any leading and trailing whitespace
           print(f"NFC tag detected with ID: {id} and text: {text}")
+          rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=3, background=True)
           current_uri = sp.current_playback()['context']['uri']
           print(current_uri)
           if text == "MFRC_TRIGGER":
             time.sleep(5)
             while True:
+              #rgb_led.on(0,0,1)
               print("entered mapping mode")
               id, text = reader.read()
               text = text.strip()
