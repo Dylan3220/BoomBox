@@ -94,17 +94,8 @@ def update_volume():
     sp.volume(new_volume, device_id=SPOTIFY_DEVICE_ID)
     print(f"Volume set to: {new_volume}%")
     volume_level = new_volume / 100
+    print("Volume Level:" + volume_level)
     rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=1, background=True)
-
- #   except:
- #     exit()
-
-    #if volume_led_timer:
-    #    volume_led_timer.cancel()
-    #volume_level = new_volume / 100
-    #rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, volume_level), n=3, background=True)
-    #volume_led_timer = threading.Timer(3, rgb_led.off())
-    #volume_led_timer.start()
 
 
 def on_button_press():   
@@ -215,17 +206,6 @@ def update_backward_station():
       exit()
         #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
 
-def monitor_playback():
-  global current_playback
-  while True:
-    try:
-      current_playback = sp.current_playback()
-      print(current_playback['is_playing'])
-      time.sleep(1)  # Check playback status every second
-    except:
-      print("error in monitor playback")
-      continue
-
 def nfc_listener():
     global last_played_uri
     
@@ -272,10 +252,6 @@ first_encoder.when_rotated = update_volume
 second_encoder.when_rotated_clockwise = update_forward_station
 second_encoder.when_rotated_counter_clockwise = update_backward_station
 switch.when_pressed = on_button_press
-
-#playback_thread = threading.Thread(target=monitor_playback)
-#playback_thread.daemon = True
-#playback_thread.start()
 
 nfc_thread = threading.Thread(target=nfc_listener)
 nfc_thread.daemon = True
