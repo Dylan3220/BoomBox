@@ -237,6 +237,7 @@ def nfc_listener():
             while True:
               print("entered mapping mode")
               id, text = reader.read()
+              text = text.strip()
               if text == "MFRC_TRIGGER":
                 print("exiting mapping mode")
                 break
