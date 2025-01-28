@@ -123,39 +123,6 @@ def on_button_press():
       print("entered pause/play except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
       sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
-      #exit()
-  
-    """last_press_time = time.time()
-    print("entered button function")
-
-    while (time.time() - last_press_time < DOUBLE_PRESS_TIME):
-        print("im in the while loop")
-        print(double_press_flag)
-        print (time.time() - last_press_time)
-        #time.time() = time.time()
-        time.sleep(.125)
-        double_press_flag = 1
-        if switch.is_pressed:
-            #rgb_led.on()
-            print("Button Double Pressed: Skipping Song")
-            sp.next_track(device_id=SPOTIFY_DEVICE_ID)
-            sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
-            last_skip_time = time.time()
-            #rgb_led.off()
-            double_press_flag = 0
-            break 
-
-    if double_press_flag and last_press_time - last_skip_time > 5:
-        print("Button Single Pressed: Toggle Pause/Play")
-        #current_playback = sp.current_playback()
-        if current_playback and current_playback['is_playing']:
-            sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
-        else:
-            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)  
-    double_press_flag = 0"""
-    
-
-
  
 def update_forward_station():
     global forward_encoder_count, current_playlist_index
@@ -167,7 +134,8 @@ def update_forward_station():
     try:
       if forward_encoder_count > 4:
         forward_encoder_count = 1
-        rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 1, 0), n=1, background=True)
+        rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
+        rgb_led.blink(on_time=1, off_time=0.5, n=1, background=True)
         current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
   
@@ -180,7 +148,7 @@ def update_forward_station():
         
     except:
       exit()
-        #rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
+        
 
 def update_backward_station():
     global backward_encoder_count, current_playlist_index
