@@ -12,3 +12,7 @@ sudo wget -O /home/diego/.local/lib/python3.11/site-packages/spotipy/oauth2.py h
 sudo systemctl enable dylan_spotify.service
 sudo systemctl enable watchdog.service
 sudo systemctl daemon-reload
+sudo systemctl stop watchdog.service
+sudo systemctl stop dylan_spotify.service
+python spotify_script_2.py
+
