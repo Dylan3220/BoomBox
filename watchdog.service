@@ -1,0 +1,10 @@
+[Unit]
+Description=Watchdog Service for Monitoring Connectivity
+After=network.target
+
+[Service]
+ExecStart=/home/diego/watchdog.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
