@@ -16,4 +16,5 @@ sudo systemctl daemon-reload
 sudo systemctl stop watchdog.service
 sudo systemctl stop dylan_spotify.service
 python spotify_script_2.py
+sudo chmod +x /home/diego/downtown.sh
 
