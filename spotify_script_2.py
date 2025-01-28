@@ -135,7 +135,7 @@ def update_forward_station():
       if forward_encoder_count > 4:
         forward_encoder_count = 1
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
-        rgb_led.blink(on_time=1, off_time=0.5, n=1, background=True)
+        rgb_led.blink(on_time=1, off_time=0.5,on_color=rgb_led.color n=1, background=True)
         current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
   
