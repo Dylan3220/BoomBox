@@ -8,7 +8,7 @@ sudo apt-get -y install curl && curl -sL https://dtcooper.github.io/raspotify/in
 sudo apt install python3-pip
 pip install spotipy --break-system-packages 
 pip install mfrc522 --break-system-packages
-
+sudo wget -O /home/diego/.local/lib/python3.11/site-packages/spotipy/oauth2.py https://raw.githubusercontent.com/Dylan3220/BoomBox/main/oauth2.py
 sudo systemctl enable dylan_spotify.service
 sudo systemctl enable watchdog.service
 sudo systemctl daemon-reload
