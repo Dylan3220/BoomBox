@@ -232,6 +232,14 @@ def nfc_listener():
           print(f"NFC tag detected with ID: {id} and text: {text}")
           current_uri = sp.current_playback()['context']['uri']
           print(current_uri)
+          if text == "MFRC_TRIGGER":
+            time.sleep(5)
+            while True:
+              print("entered mapping mode")
+              id, text = reader.read()
+              if text == "MFRC_TRIGGER":
+                print("exiting mapping mode")
+                break
           if text == current_uri or text == last_played_uri:
             print("Current Playing Card")
             continue
