@@ -195,11 +195,12 @@ def nfc_listener():
             time.sleep(5)
             while True:
               #rgb_led.on(0,0,1)
-              rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, 1), n=1, background=True)
+              rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, 1), background=True)
               id, text = reader.read()
               text = text.strip()
               if text == "MFRC_TRIGGER":
                 print("exiting mapping mode")
+                rgb_led.off()
                 time.sleep(5)
                 break
               reader.write(current_uri)
