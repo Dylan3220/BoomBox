@@ -78,7 +78,7 @@ PLAYLISTS = [
 
 # Corresponding colors for the playlists
 PLAYLIST_COLORS = [
-    (142, 107, 128),  # Red
+    (1, 1, 1),  # Red
     (0, 1, 0),  # Green
     (0, 0, 1),  # Blue
     (1, 1, 0),  # Yellow
