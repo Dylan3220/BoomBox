@@ -191,10 +191,11 @@ def nfc_listener():
           current_uri = sp.current_playback()['context']['uri']
           print(current_uri)
           if text == "MFRC_TRIGGER":
+            print("entered mapping mode")
             time.sleep(5)
             while True:
               #rgb_led.on(0,0,1)
-              print("entered mapping mode")
+              rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, 1), n=1, background=True)
               id, text = reader.read()
               text = text.strip()
               if text == "MFRC_TRIGGER":
