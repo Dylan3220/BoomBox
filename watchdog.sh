@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICE_NAME="your-service-name"
+SERVICE_NAME="dylan_spotify.service"
 TEST_URL="https://api.spotify.com/v1"  # Replace with the URL your application depends on
 LOG_FILE="/var/log/watchdog.log"
 
