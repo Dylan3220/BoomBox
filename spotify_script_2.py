@@ -155,6 +155,7 @@ def update_forward_station():
     except:
       print("entered forward station except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      update_forward_station()
       #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
   
 
@@ -182,6 +183,7 @@ def update_backward_station():
     except:
       print("entered backward station except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      update_backward_station()
       #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
   
 
@@ -228,6 +230,7 @@ def nfc_listener():
           #  time.sleep(1)  # Delay between NFC reads
     except:
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      nfc_listener()
       #sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
     
 # Attach handlers
