@@ -217,7 +217,7 @@ def nfc_listener():
             print("Current Playing Card")
             continue
           elif text.startswith("spotify:"):
-            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
+            #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
             sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
             time.sleep(2)
             sp.start_playback()
@@ -227,8 +227,8 @@ def nfc_listener():
           #  print(f"Invalid Spotify URI: {text}")
           #  time.sleep(1)  # Delay between NFC reads
     except:
-      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
-      sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      #sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
     
 # Attach handlers
 first_encoder.when_rotated = update_volume
