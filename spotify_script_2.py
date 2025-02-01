@@ -257,6 +257,10 @@ nfc_thread = threading.Thread(target=nfc_listener)
 nfc_thread.daemon = True
 nfc_thread.start()
 
+schleepy_thread = threading.Thread(target=schleepy)
+schleepy_thread.daemon = True
+schleepy_thread.start()
+
 try:
   while True:
       time.sleep(0.01)  # Main loop delay
