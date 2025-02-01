@@ -240,14 +240,17 @@ def nfc_listener():
 
 def schleepy():
   global sleep_time
-  current_time = time.time()
-  print(f"sleep time: {sleep_time}")
-  print(f"current time: {current_time}")
-
-  if (current_time - sleep_time) > (1*60):
-    print("feeling schleepy")
-    time.sleep(1)
+  while True:
+    current_time = time.time()
+    print(f"sleep time: {sleep_time}")
+    print(f"current time: {current_time}")
   
+    if (current_time - sleep_time) > (1*60):
+      print("feeling schleepy")
+
+     time.sleep(1)
+     
+    
 
 
 # Attach handlers
