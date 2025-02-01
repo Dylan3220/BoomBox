@@ -87,7 +87,8 @@ PLAYLIST_COLORS = [
 ]
 
 def update_volume():
-    global volume_led_timer
+    global sleep_time, volume_led_timer
+    sleep_time = time.time()
     #try:
     p_encoder_value = first_encoder.value
     new_volume = int(50 + 50 * p_encoder_value)
@@ -102,7 +103,8 @@ def update_volume():
 
 def on_button_press():   
 
-    global last_press_time, last_skip_time, press_count, double_press_flag
+    global sleep_time, last_press_time, last_skip_time, press_count, double_press_flag
+    sleep_time = time.time()
     rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 1), n=1, background=True)
 
     
@@ -131,7 +133,7 @@ def on_button_press():
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
  
 def update_forward_station():
-    global forward_encoder_count, current_playlist_index
+    global sleep_time, forward_encoder_count, current_playlist_index
     forward_encoder_count = forward_encoder_count + 1
     print(f"Forward encoder count: {forward_encoder_count}")
     seekCount = random.randrange(1, 140000, 1)
@@ -160,7 +162,8 @@ def update_forward_station():
   
 
 def update_backward_station():
-    global backward_encoder_count, current_playlist_index
+    global sleep_time, backward_encoder_count, current_playlist_index
+    sleep_time = time.time()
     backward_encoder_count = backward_encoder_count + 1
     print(f"Backward encoder count: {backward_encoder_count}")
     seekCount = random.randrange(1, 140000, 1)
@@ -189,7 +192,7 @@ def update_backward_station():
 
 
 def nfc_listener():
-    global last_played_uri
+    global sleep_time, last_played_uri
     
     try:
       while True:
@@ -219,6 +222,7 @@ def nfc_listener():
             print("Current Playing Card")
             continue
           elif text.startswith("spotify:"):
+            sleep_time = time.time()
             #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
             sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
             time.sleep(2)
@@ -232,7 +236,17 @@ def nfc_listener():
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
       nfc_listener()
       #sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-    
+
+def schleepy():
+  global sleep_time
+  current_time = time.time()
+
+  if (current_time - sleep_time) > (1*60):
+    print("feeling schleepy")
+    time.sleep(1)
+  
+
+
 # Attach handlers
 first_encoder.when_rotated = update_volume
 second_encoder.when_rotated_clockwise = update_forward_station
