@@ -62,6 +62,7 @@ forward_encoder_count = 0
 backward_encoder_count = 0
 double_press_flag = 0
 last_played_uri = None
+sleep_time = None
 
 
 # Hardcoded playlists
