@@ -272,4 +272,5 @@ try:
       time.sleep(0.01)  # Main loop delay
 except:
   GPIO.cleanup()
+  exit()
   rgb_led.off()
