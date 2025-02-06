@@ -57,8 +57,8 @@ press_count = 0
 presstype = 0
 volume_led_timer = None
 last_second_encoder_value = 0
-#current_playlist_index = random.randrange(1, 6, 1)
-current_playlist_index = 0
+current_playlist_index = random.randrange(1, 6, 1)
+#current_playlist_index = 0
 forward_encoder_count = 0
 backward_encoder_count = 0
 double_press_flag = 0
@@ -144,11 +144,10 @@ def update_forward_station():
     try:
       if forward_encoder_count > 4:
         forward_encoder_count = 1
+        current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
         rgb_led.blink(on_time=1, off_time=0.5,on_color=rgb_led.color, n=1, background=True)
-        current_playlist_index = (current_playlist_index + 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
-  
         print(f"Switching to playlist: {playlist_id}")
   
         #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
@@ -174,11 +173,10 @@ def update_backward_station():
     try:
       if backward_encoder_count > 4:
         backward_encoder_count = 1
+        current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
         rgb_led.blink(on_time=1, off_time=0.5,on_color=rgb_led.color, n=1, background=True)
-        current_playlist_index = (current_playlist_index - 1) % len(PLAYLISTS)
         playlist_id = PLAYLISTS[current_playlist_index]
-
         print(f"Switching to playlist: {playlist_id}")
 
         #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
