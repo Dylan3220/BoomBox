@@ -57,7 +57,7 @@ press_count = 0
 presstype = 0
 volume_led_timer = None
 last_second_encoder_value = 0
-current_playlist_index = 0
+current_playlist_index = random.randrange(1, 6, 1)
 forward_encoder_count = 0
 backward_encoder_count = 0
 double_press_flag = 0
@@ -152,6 +152,7 @@ def update_forward_station():
   
         #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
         sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        sp.shuffle(True)
         #time.sleep(2)
         #sp.start_playback()
         
@@ -168,7 +169,7 @@ def update_backward_station():
     backward_encoder_count = backward_encoder_count + 1
     print(f"Backward encoder count: {backward_encoder_count}")
     seekCount = random.randrange(1, 140000, 1)
-    positionCount = random.randrange(1, 20, 1)
+    positionCount = random.randrange(1, 40, 1)
     try:
       if backward_encoder_count > 4:
         backward_encoder_count = 1
@@ -181,6 +182,7 @@ def update_backward_station():
 
         #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
         sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
+        sp.shuffle(True)
         #time.sleep(2)
         #sp.start_playback()
         
@@ -228,6 +230,7 @@ def nfc_listener():
             sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
             time.sleep(2)
             sp.start_playback()
+            sp.shuffle(False)
             print(f"Playing Spotify URI: {text}")
             last_played_uri = text
           #else:
