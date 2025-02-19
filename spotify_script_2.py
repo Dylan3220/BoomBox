@@ -127,12 +127,14 @@ def on_button_press():
         #time.sleep(2)
         sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
         
+        
     except:
       print("entered pause/play except statement")
       #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
       #sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
       #time.sleep(2)
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      exit()
  
 def update_forward_station():
     global sleep_time, forward_encoder_count, current_playlist_index
@@ -160,6 +162,7 @@ def update_forward_station():
       print("entered forward station except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
       update_forward_station()
+      exit()
       #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
   
 
@@ -189,6 +192,7 @@ def update_backward_station():
       print("entered backward station except statement")
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
       update_backward_station()
+      exit()
       #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
   
 
@@ -238,6 +242,7 @@ def nfc_listener():
     except:
       sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
       nfc_listener()
+      exit()
       #sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
 
 def schleepy():
