@@ -277,11 +277,11 @@ nfc_thread.start()
 #schleepy_thread.daemon = True
 #schleepy_thread.start()
 
-try:
-  while True:
-      time.sleep(0.01)  # Main loop delay
-except:
-  GPIO.cleanup()
-  rgb_led.off()
-  exit()
+#try:
+while True:
+  time.sleep(0.01)  # Main loop delay
+#except:
+  #GPIO.cleanup()
+  #rgb_led.off()
+  #exit()
   
