@@ -89,6 +89,7 @@ PLAYLIST_COLORS = [
 ]
 
 def update_volume():
+  try:
     global sleep_time, volume_led_timer
     sleep_time = time.time()
     #try:
@@ -101,6 +102,8 @@ def update_volume():
     green_value = abs(1 - red_value)
     print(f"Volume Level: {volume_level}%")
     rgb_led.blink(on_time=1, off_time=0.5, on_color=(red_value, green_value, 0), n=1, background=True)
+  except:
+    exit()
 
 
 def on_button_press():   
