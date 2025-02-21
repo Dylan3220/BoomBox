@@ -34,29 +34,21 @@ switch = Button(SWITCH_PIN, pull_up=True, bounce_time=.05)
 def on_button_press():   
     rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 1), n=1, background=True)
 
-  #try:
-    current_playback = sp.current_playback()
-    
-    #print("current playback is")
-    #print(current_playback['is_playing'])
-  
-    if current_playback['is_playing'] == True:
-      print("entered pause statement")
-      sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+    try:
+        current_playback = sp.current_playback()
 
-    else:
-      print("entered play statement")
-      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-      
-      
-  #except:
-    #print("entered pause/play except statement")
-    #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
-    #sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
-    #time.sleep(2)
-    #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-#      exit()
+        if current_playback and current_playback.get('is_playing', False):
+            print("entered pause statement")
+            sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+        else:
+            print("entered play statement")
+            sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
 
+    except requests.exceptions.RequestException as e:
+        print(f"Network error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+      
 switch.when_pressed = on_button_press
 
 #try:
