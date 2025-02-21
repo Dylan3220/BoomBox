@@ -132,11 +132,11 @@ def on_button_press():
         
         
     except:
-      print("entered pause/play except statement")
+      ##print("entered pause/play except statement")
       #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
       #sp.start_playback(device_id=SPOTIFY_DEVICE_ID)
       #time.sleep(2)
-      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      ##sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
       exit()
  
 def update_forward_station():
@@ -162,9 +162,9 @@ def update_forward_station():
         #sp.start_playback()
         
     except:
-      print("entered forward station except statement")
-      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-      update_forward_station()
+      #print("entered forward station except statement")
+      #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      #update_forward_station()
       exit()
       #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
   
@@ -192,9 +192,9 @@ def update_backward_station():
         #sp.start_playback()
         
     except:
-      print("entered backward station except statement")
-      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-      update_backward_station()
+      #print("entered backward station except statement")
+      #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      #update_backward_station()
       exit()
       #sp.start_playback(context_uri=f'spotify:{playlist_id}', offset={"position": positionCount}, position_ms=seekCount, device_id=SPOTIFY_DEVICE_ID)
   
@@ -243,8 +243,8 @@ def nfc_listener():
           #  print(f"Invalid Spotify URI: {text}")
           #  time.sleep(1)  # Delay between NFC reads
     except:
-      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-      nfc_listener()
+      #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+      #nfc_listener()
       exit()
       #sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
 
