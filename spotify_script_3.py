@@ -93,11 +93,11 @@ print(last_first)
 print(last_second)
 
 while True:
-  if first_encoder.value =! last_first:
+  if first_encoder.value != last_first:
     print("update volume")
   else:
     print("ignoring volume")
-  if second_encoder.value =! last_second:
+  if second_encoder.value != last_second:
     print("update station")
   else:
     print("ignoring station")
