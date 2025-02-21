@@ -101,7 +101,7 @@ while True:
     print("update station")
   else:
     print("ignoring station")
-  if button.is_pressed:
+  if switch.is_pressed:
     print("toggle pause/play")
     current_playback = sp.current_playback()
     print("current playback is")
