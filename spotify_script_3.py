@@ -87,22 +87,34 @@ PLAYLIST_COLORS = [
     (1, 0, 1),  # Magenta
     (0, 1, 1),  # Cyan
 ]
-last_first = first.encoder.value
-last_second = second.encoder.value
+last_first = first_encoder.value
+last_second = second_encoder.value
 print(last_first)
 print(last_second)
 
 while True:
-  if first.encoder.value =! last_first:
+  if first_encoder.value =! last_first:
     print("update volume")
   else:
     print("ignoring volume")
-  if second.encoder.value =! last_second:
+  if second_encoder.value =! last_second:
     print("update station")
   else:
     print("ignoring station")
-  if button.ispressed:
+  if button.is_pressed:
     print("toggle pause/play")
+    current_playback = sp.current_playback()
+    print("current playback is")
+    print(current_playback['is_playing'])
+  
+    if current_playback['is_playing'] == True:
+      print("entered pause statement")
+      sp.pause_playback(device_id=SPOTIFY_DEVICE_ID)
+
+    elif current_playback['is_playing'] == False:
+      print("entered play statement")
+      sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
+    
   else:
     print("ignore pause/play")
   time.sleep(.25)
