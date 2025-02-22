@@ -102,9 +102,10 @@ def update_volume():
     green_value = abs(1 - red_value)
     print(f"Volume Level: {volume_level}%")
     rgb_led.blink(on_time=1, off_time=0.5, on_color=(red_value, green_value, 0), n=1, background=True)
-  except:
-    exit()
-
+  except requests.exceptions.RequestException as e:
+    print(f"Network error: {e}")
+  except Exception as e:
+    print(f"Unexpected error: {e}")
 
 def on_button_press():   
 
