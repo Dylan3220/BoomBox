@@ -6,6 +6,7 @@ import threading
 import random
 from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
+import requests
 
 # Spotify credentials and scope
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
