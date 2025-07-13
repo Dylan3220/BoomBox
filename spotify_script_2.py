@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 import time
 import threading
 import random
+import requests
 from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 
