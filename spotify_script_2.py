@@ -305,4 +305,30 @@ def nfc_listener():
 # Attach handlers & start NFC thread
 # -----------------------
 first_encoder.when_rotated = update_volume
-second_encoder.when_rotated_clockwise = upda_
+second_encoder.when_rotated_clockwise = update_forward_station
+second_encoder.when_rotated_counter_clockwise = update_backward_station
+switch.when_pressed = on_button_press
+
+nfc_thread = threading.Thread(target=nfc_listener, daemon=True)
+nfc_thread.start()
+
+# -----------------------
+# Main loop (keeps program alive)
+# -----------------------
+try:
+    print("Main loop starting. Press Ctrl+C to exit.")
+    while True:
+        time.sleep(0.1)
+except KeyboardInterrupt:
+    print("Exiting on keyboard interrupt. Cleaning up GPIO and LEDs.")
+    try:
+        gpio_cleanup = getattr(GPIO, "cleanup", None)
+        if gpio_cleanup:
+            gpio_cleanup()
+    except Exception as e:
+        print(f"GPIO cleanup error: {e}")
+    try:
+        rgb_led.off()
+    except Exception:
+        pass
+    print("Goodbye.")
