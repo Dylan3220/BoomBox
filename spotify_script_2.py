@@ -9,6 +9,7 @@ CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
 CLIENT_SECRET = 'e5a112f992ee43e9bbea57b8c19b053b'
 REDIRECT_URI = 'http://10.0.0.217:8080/auth-response/'
 SCOPE = 'user-modify-playback-state user-read-playback-state'
+CACHE_PATH = "/home/diego/spotify_auth_cache2.json"
 
 # ---- AUTH ----
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
@@ -16,6 +17,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_secret=CLIENT_SECRET,
     redirect_uri=REDIRECT_URI,
     scope=SCOPE
+    cache_path=CACHE_PATH
 ))
 
 # ---- WRAPPER ----
