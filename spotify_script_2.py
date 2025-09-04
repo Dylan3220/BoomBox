@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------15
+# -----------------------16
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -179,9 +179,8 @@ def nfc_listener():
         id, text = reader.read()
         text = text.strip()  # Remove any leading and trailing whitespace
         print(f"NFC tag detected with ID: {id} and text: {text}")
-        rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
-        current_uri = sp.current_playback()['context']['uri']
-        print(current_uri)
+        #current_uri = sp.current_playback()['context']['uri']
+        #print(current_uri)
         if text == "MFRC_TRIGGER":
           print("entered mapping mode")
           time.sleep(5)
@@ -195,13 +194,18 @@ def nfc_listener():
               rgb_led.off()
               time.sleep(5)
               break
+            current_uri = sp.current_playback()['context']['uri']
+            print(current_uri)
             reader.write(current_uri)
-        if text == current_uri or text == last_played_uri:
+        if text == last_played_uri:
           print("Current Playing Card")
           continue
         elif text.startswith("spotify:"):
           sleep_time = time.time()
+          current_uri = sp.current_playback()['context']['uri']
+          print(current_uri)
           #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
+          rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
           sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
           time.sleep(2)
           sp.start_playback()
