@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------11
+# -----------------------12
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -180,15 +180,18 @@ def nfc_listener():
             text = (text or "").strip()
             
             if not text:
+                # No card detected, reset state
                 last_card_id = None
                 card_present = False
                 time.sleep(0.05)
                 continue
 
             if id == last_card_id and card_present:
+                # Same card still present, skip reading
                 time.sleep(0.2)
                 continue
 
+            # New card detected
             last_card_id = id
             card_present = True
             led_feedback((1, 1, 0))
@@ -206,9 +209,8 @@ def nfc_listener():
                     if last_played_uri:
                         print(f"Writing {last_played_uri} to card")
                         reader.write(last_played_uri)
-            elif text.startswith("spotify:album:") or \
-                 text.startswith("spotify:track:") or \
-                 text.startswith("spotify:playlist:"):
+
+            elif text.startswith(("spotify:album:", "spotify:track:", "spotify:playlist:")):
                 if text != last_played_uri:
                     print(f"Playing URI from card: {text}")
                     try:
@@ -219,10 +221,13 @@ def nfc_listener():
                     except Exception as e:
                         print(f"Spotify playback error: {e}")
         except Exception as e:
+            # Suppress frequent card read/auth errors
             if "AUTH ERROR" in str(e) or "Error while reading" in str(e):
                 time.sleep(0.2)
             else:
                 print(f"NFC listener unexpected error: {e}")
+
+        # Always wait a little to prevent CPU spin
         time.sleep(0.05)
 
 # -----------------------
