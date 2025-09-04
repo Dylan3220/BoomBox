@@ -171,64 +171,43 @@ def update_backward_station():
 # -----------------------
 def nfc_listener():
     global last_played_uri
-    last_card_id = None
-    card_present = False
-
-    while True:
-        try:
+    try:
+        while True:
             id, text = reader.read()
             text = (text or "").strip()
-            
             if not text:
-                # No card detected, reset state
-                last_card_id = None
-                card_present = False
-                time.sleep(0.05)
+                time.sleep(0.1)
                 continue
 
-            if id == last_card_id and card_present:
-                # Same card still present, skip reading
-                time.sleep(0.2)
-                continue
-
-            # New card detected
-            last_card_id = id
-            card_present = True
-            led_feedback((1, 1, 0))
             print(f"NFC card detected: {id}, {text}")
+            rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
 
-            if text == "MFRC_TRIGGER":
-                print("Mapping mode activated")
-                while True:
-                    id2, text2 = reader.read()
-                    text2 = (text2 or "").strip()
-                    if text2 == "MFRC_TRIGGER":
-                        print("Mapping mode exit")
-                        rgb_led.off()
-                        break
-                    if last_played_uri:
-                        print(f"Writing {last_played_uri} to card")
-                        reader.write(last_played_uri)
+            # Skip if it's the same as last played URI
+            if text == last_played_uri:
+                time.sleep(0.1)
+                continue
 
-            elif text.startswith(("spotify:album:", "spotify:track:", "spotify:playlist:")):
-                if text != last_played_uri:
-                    print(f"Playing URI from card: {text}")
-                    try:
+            # Play if valid Spotify URI
+            if text.startswith(("spotify:album:", "spotify:track:", "spotify:playlist:")):
+                last_played_uri = text
+                try:
+                    # This will start playback without restarting the album/track if already playing
+                    current_playback = sp.current_playback()
+                    if current_playback and current_playback.get('context', {}).get('uri') == text:
+                        print(f"Already playing {text}, skipping restart")
+                    else:
+                        print(f"Playing URI from card: {text}")
                         spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
                         time.sleep(0.1)
                         spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
-                        last_played_uri = text
-                    except Exception as e:
-                        print(f"Spotify playback error: {e}")
-        except Exception as e:
-            # Suppress frequent card read/auth errors
-            if "AUTH ERROR" in str(e) or "Error while reading" in str(e):
-                time.sleep(0.2)
-            else:
-                print(f"NFC listener unexpected error: {e}")
+                except Exception as e:
+                    print(f"Spotify playback error: {e}")
 
-        # Always wait a little to prevent CPU spin
-        time.sleep(0.05)
+            # Small delay to prevent CPU spin / multiple reads
+            time.sleep(0.2)
+    except Exception as e:
+        print(f"NFC listener unexpected error: {e}")
+
 
 # -----------------------
 # ATTACH CALLBACKS
