@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------14
+# -----------------------15
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -170,44 +170,51 @@ def update_backward_station():
 # NFC THREAD
 # -----------------------
 def nfc_listener():
-    global last_played_uri
-    try:
-        while True:
+  global sleep_time, last_played_uri
+  
+  try:
+    while True:
+        print("entered NFC loop")
+        print(last_played_uri)
+        id, text = reader.read()
+        text = text.strip()  # Remove any leading and trailing whitespace
+        print(f"NFC tag detected with ID: {id} and text: {text}")
+        rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
+        current_uri = sp.current_playback()['context']['uri']
+        print(current_uri)
+        if text == "MFRC_TRIGGER":
+          print("entered mapping mode")
+          time.sleep(5)
+          while True:
+            #rgb_led.on(0,0,1)
+            rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, 1), background=True)
             id, text = reader.read()
-            text = (text or "").strip()
-            if not text:
-                time.sleep(0.1)
-                continue
-
-
-
-            # Skip if it's the same as last played URI
-            if text == last_played_uri:
-                time.sleep(0.1)
-                continue
-
-            # Play if valid Spotify URI
-            if text.startswith(("spotify:album:", "spotify:track:", "spotify:playlist:")):
-                last_played_uri = text
-                print(f"NFC card detected: {id}, {text}")
-                rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
-                try:
-                    # This will start playback without restarting the album/track if already playing
-                    current_playback = sp.current_playback()
-                    if current_playback and current_playback.get('context', {}).get('uri') == text:
-                        print(f"Already playing {text}, skipping restart")
-                    else:
-                        print(f"Playing URI from card: {text}")
-                        spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-                        time.sleep(0.1)
-                        spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
-                except Exception as e:
-                    print(f"Spotify playback error: {e}")
-
-            # Small delay to prevent CPU spin / multiple reads
-            time.sleep(0.2)
-    except Exception as e:
-        print(f"NFC listener unexpected error: {e}")
+            text = text.strip()
+            if text == "MFRC_TRIGGER":
+              print("exiting mapping mode")
+              rgb_led.off()
+              time.sleep(5)
+              break
+            reader.write(current_uri)
+        if text == current_uri or text == last_played_uri:
+          print("Current Playing Card")
+          continue
+        elif text.startswith("spotify:"):
+          sleep_time = time.time()
+          #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
+          sp.start_playback(context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+          time.sleep(2)
+          sp.start_playback()
+          sp.shuffle(False)
+          print(f"Playing Spotify URI: {text}")
+          last_played_uri = text
+        #else:
+        #  print(f"Invalid Spotify URI: {text}")
+        #  time.sleep(1)  # Delay between NFC reads
+  except requests.exceptions.RequestException as e:
+    print(f"Network error: {e}")
+  except Exception as e:
+    print(f"Unexpected error: {e}")
 
 
 # -----------------------
