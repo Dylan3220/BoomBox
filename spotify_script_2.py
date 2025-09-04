@@ -179,8 +179,7 @@ def nfc_listener():
                 time.sleep(0.1)
                 continue
 
-            print(f"NFC card detected: {id}, {text}")
-            rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
+
 
             # Skip if it's the same as last played URI
             if text == last_played_uri:
@@ -190,6 +189,8 @@ def nfc_listener():
             # Play if valid Spotify URI
             if text.startswith(("spotify:album:", "spotify:track:", "spotify:playlist:")):
                 last_played_uri = text
+                print(f"NFC card detected: {id}, {text}")
+                rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
                 try:
                     # This will start playback without restarting the album/track if already playing
                     current_playback = sp.current_playback()
