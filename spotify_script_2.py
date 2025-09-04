@@ -5,9 +5,9 @@ import random
 from gpiozero import Button, RotaryEncoder, RGBLED
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
-from spotipy.exceptions import SpotifyException
 from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
+import requests
 
 # -----------------------
 # CONFIG
@@ -69,70 +69,32 @@ last_played_uri = None
 forward_encoder_count = 0
 backward_encoder_count = 0
 current_playlist_index = random.randrange(0, len(PLAYLISTS))
-volume_update_time = 0
-VOLUME_THROTTLE = 0.1  # seconds
 
 # -----------------------
 # SPOTIFY HELPER
 # -----------------------
-def spotify_call(func, *args, force_transfer=True, **kwargs):
+def spotify_call(func, *args, **kwargs):
     try:
         return func(*args, **kwargs)
-    except SpotifyException as e:
-        msg = str(e)
-        status = getattr(e, "http_status", None)
-        if status == 404 and "NO_ACTIVE_DEVICE" in msg.upper():
-            if force_transfer:
-                print("⚠️ No active device. Forcing playback...")
-                sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=True)
-                return func(*args, **kwargs)
-        elif status == 401:
-            print("⚠️ Unauthorized / token expired.")
-            return None
-        else:
-            print(f"SpotifyException ({status}): {e}")
-            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Network error: {e}")
     except Exception as e:
-        print(f"Spotify unexpected error: {e}")
-        return None
-
-def set_volume(vol):
-    spotify_call(sp.volume, vol, device_id=SPOTIFY_DEVICE_ID, force_transfer=False)
-
-def toggle_shuffle(state):
-    spotify_call(sp.shuffle, state, device_id=SPOTIFY_DEVICE_ID)
-
-def start_playback_uri(uri, offset_position=None, position_ms=None):
-    ctx = uri if uri.startswith('spotify:') else 'spotify:' + uri
-    kwargs = {"device_id": SPOTIFY_DEVICE_ID}
-    if offset_position is not None:
-        kwargs["offset"] = {"position": offset_position}
-    if position_ms is not None:
-        kwargs["position_ms"] = position_ms
-    spotify_call(sp.start_playback, context_uri=ctx, **kwargs)
-
-def pause_playback():
-    spotify_call(sp.pause_playback, device_id=SPOTIFY_DEVICE_ID)
-
-def transfer_and_play():
-    spotify_call(sp.transfer_playback, device_id=SPOTIFY_DEVICE_ID, force_play=True)
+        print(f"Unexpected error: {e}")
 
 # -----------------------
 # HANDLERS
 # -----------------------
 def update_volume():
-    global volume_update_time
-    now = time.time()
-    if now - volume_update_time < VOLUME_THROTTLE:
-        return
-    volume_update_time = now
     try:
         p_encoder_value = first_encoder.value
         new_volume = int(50 + 50 * p_encoder_value)
         new_volume = max(0, min(100, new_volume))
-        set_volume(new_volume)
-        rgb_led.blink(on_time=0.1, off_time=0.05, on_color=(1-new_volume/100, new_volume/100, 0), n=1, background=True)
-        print(f"Volume: {new_volume}%")
+        spotify_call(sp.volume, new_volume, device_id=SPOTIFY_DEVICE_ID)
+        # Update LED based on volume
+        red_value = 1 - new_volume / 100
+        green_value = new_volume / 100
+        rgb_led.blink(on_time=0.1, off_time=0.05, on_color=(red_value, green_value, 0), n=1, background=True)
+        print(f"Volume set to: {new_volume}%")
     except Exception as e:
         print(f"Volume error: {e}")
 
@@ -149,15 +111,15 @@ def on_button_press():
 
         if is_playing:
             print("Pausing playback")
-            pause_playback()
+            spotify_call(sp.pause_playback, device_id=SPOTIFY_DEVICE_ID)
             last_state = False
         else:
-            if device == SPOTIFY_DEVICE_ID and playback and playback.get('context'):
+            if device == SPOTIFY_DEVICE_ID:
                 print("Resuming playback on Pi")
-                start_playback_uri(playback['context']['uri'])
+                spotify_call(sp.start_playback, device_id=SPOTIFY_DEVICE_ID)
             else:
                 print("Transferring playback to Pi and playing")
-                transfer_and_play()
+                spotify_call(sp.transfer_playback, device_id=SPOTIFY_DEVICE_ID, force_play=True)
             last_state = True
     except Exception as e:
         print(f"Pause/resume error: {e}")
@@ -171,8 +133,8 @@ def update_forward_station():
         playlist_id = PLAYLISTS[current_playlist_index]
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
         rgb_led.blink(on_time=0.2, off_time=0.1, on_color=rgb_led.color, n=1, background=True)
-        start_playback_uri(playlist_id, offset_position=random.randrange(0,20), position_ms=random.randrange(0,140000))
-        toggle_shuffle(True)
+        spotify_call(sp.start_playback, context_uri=playlist_id, offset={"position": random.randrange(0,20)}, position_ms=random.randrange(0,140000), device_id=SPOTIFY_DEVICE_ID)
+        spotify_call(sp.shuffle, True, device_id=SPOTIFY_DEVICE_ID)
         print(f"Switching to playlist: {playlist_id}")
 
 def update_backward_station():
@@ -184,8 +146,8 @@ def update_backward_station():
         playlist_id = PLAYLISTS[current_playlist_index]
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
         rgb_led.blink(on_time=0.2, off_time=0.1, on_color=rgb_led.color, n=1, background=True)
-        start_playback_uri(playlist_id, offset_position=random.randrange(0,40), position_ms=random.randrange(0,140000))
-        toggle_shuffle(True)
+        spotify_call(sp.start_playback, context_uri=playlist_id, offset={"position": random.randrange(0,40)}, position_ms=random.randrange(0,140000), device_id=SPOTIFY_DEVICE_ID)
+        spotify_call(sp.shuffle, True, device_id=SPOTIFY_DEVICE_ID)
         print(f"Switching to playlist: {playlist_id}")
 
 # -----------------------
@@ -221,7 +183,7 @@ def nfc_listener():
                 if text == current_uri or text == last_played_uri:
                     continue
                 print(f"Playing URI from card: {text}")
-                start_playback_uri(text)
+                spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
                 spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
                 last_played_uri = text
         except Exception as e:
