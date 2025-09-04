@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------2
+# -----------------------
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -29,7 +29,6 @@ LED_PIN_R = 0
 LED_PIN_G = 13
 LED_PIN_B = 26
 
-# Full Spotify URI for playlists
 PLAYLISTS = [
     'spotify:playlist:3OW97U4iSQIHFUXMRRh6Us',
     'spotify:playlist:37i9dQZF1DWXi7h4mmmkzD',
@@ -98,7 +97,6 @@ def update_volume():
         new_volume = int(50 + 50 * p_encoder_value)
         new_volume = max(0, min(100, new_volume))
         spotify_call(sp.volume, new_volume, device_id=SPOTIFY_DEVICE_ID)
-        # LED color shows volume level
         red_value = 1 - new_volume / 100
         green_value = new_volume / 100
         led_feedback((red_value, green_value, 0))
@@ -135,16 +133,12 @@ def on_button_press():
         print(f"Pause/resume error: {e}")
 
 def play_random_track_in_playlist(playlist_uri):
-    """Pick random song and random position within that song"""
     try:
-        # Random track offset in the playlist
         offset = {"position": random.randint(0, 20)}
-        # Random position in ms
         position_ms = random.randint(0, 140000)
         spotify_call(sp.start_playback, context_uri=playlist_uri,
                      offset=offset, position_ms=position_ms,
                      device_id=SPOTIFY_DEVICE_ID)
-        # Enable shuffle after playback
         time.sleep(0.1)
         spotify_call(sp.shuffle, True, device_id=SPOTIFY_DEVICE_ID)
     except Exception as e:
@@ -177,17 +171,29 @@ def update_backward_station():
 # -----------------------
 def nfc_listener():
     global last_played_uri
+    last_card_id = None
+    card_present = False
+
     while True:
         try:
             id, text = reader.read()
             text = (text or "").strip()
+            
             if not text:
+                last_card_id = None
+                card_present = False
+                time.sleep(0.05)
                 continue
-            led_feedback((1, 1, 0))
-            playback = spotify_call(sp.current_playback)
-            current_uri = playback.get('context', {}).get('uri') if playback else None
 
-            # Mapping mode
+            if id == last_card_id and card_present:
+                time.sleep(0.2)
+                continue
+
+            last_card_id = id
+            card_present = True
+            led_feedback((1, 1, 0))
+            print(f"NFC card detected: {id}, {text}")
+
             if text == "MFRC_TRIGGER":
                 print("Mapping mode activated")
                 while True:
@@ -197,20 +203,26 @@ def nfc_listener():
                         print("Mapping mode exit")
                         rgb_led.off()
                         break
-                    if current_uri:
-                        print(f"Writing {current_uri} to card")
-                        reader.write(current_uri)
-            # Regular playback
-            elif text.startswith("spotify:") or text.startswith("playlist:"):
-                if text == current_uri or text == last_played_uri:
-                    continue
-                print(f"Playing URI from card: {text}")
-                spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-                time.sleep(0.1)
-                spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
-                last_played_uri = text
+                    if last_played_uri:
+                        print(f"Writing {last_played_uri} to card")
+                        reader.write(last_played_uri)
+            elif text.startswith("spotify:album:") or \
+                 text.startswith("spotify:track:") or \
+                 text.startswith("spotify:playlist:"):
+                if text != last_played_uri:
+                    print(f"Playing URI from card: {text}")
+                    try:
+                        spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+                        time.sleep(0.1)
+                        spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
+                        last_played_uri = text
+                    except Exception as e:
+                        print(f"Spotify playback error: {e}")
         except Exception as e:
-            print(f"NFC error: {e}")
+            if "AUTH ERROR" in str(e) or "Error while reading" in str(e):
+                time.sleep(0.2)
+            else:
+                print(f"NFC listener unexpected error: {e}")
         time.sleep(0.05)
 
 # -----------------------
@@ -227,11 +239,11 @@ nfc_thread.start()
 # -----------------------
 # MAIN LOOP
 # -----------------------
+print("Running... Ctrl+C to exit.")
 try:
-    print("Running... Ctrl+C to exit.")
     while True:
-        time.sleep(0.1)
+        time.sleep(0.01)
 except KeyboardInterrupt:
-    print("Exiting. Cleaning up...")
     GPIO.cleanup()
     rgb_led.off()
+    print("Exiting...")
