@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import time
+
 import threading
 import random
 from gpiozero import Button, RotaryEncoder, RGBLED
@@ -29,17 +30,18 @@ LED_PIN_R = 0
 LED_PIN_G = 13
 LED_PIN_B = 26
 
+# Full Spotify URI for playlists
 PLAYLISTS = [
-    'playlist:3OW97U4iSQIHFUXMRRh6Us', 
-    'playlist:37i9dQZF1DWXi7h4mmmkzD', 
-    'playlist:37i9dQZF1DXb8wplbC2YhV', 
-    'playlist:37i9dQZF1DX0MLFaUdXnjA', 
-    'playlist:37i9dQZF1DX17GkScaAekA', 
-    'playlist:37i9dQZF1DWV7EzJMK2FUI'
+    'spotify:playlist:3OW97U4iSQIHFUXMRRh6Us',
+    'spotify:playlist:37i9dQZF1DWXi7h4mmmkzD',
+    'spotify:playlist:37i9dQZF1DXb8wplbC2YhV',
+    'spotify:playlist:37i9dQZF1DX0MLFaUdXnjA',
+    'spotify:playlist:37i9dQZF1DX17GkScaAekA',
+    'spotify:playlist:37i9dQZF1DWV7EzJMK2FUI'
 ]
 
 PLAYLIST_COLORS = [
-    (1, 1, 1), (0, 1, 0), (0, 0, 1), 
+    (1, 1, 1), (0, 1, 0), (0, 0, 1),
     (1, 1, 0), (1, 0, 1), (0, 1, 1)
 ]
 
@@ -133,7 +135,8 @@ def update_forward_station():
         playlist_id = PLAYLISTS[current_playlist_index]
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
         rgb_led.blink(on_time=0.2, off_time=0.1, on_color=rgb_led.color, n=1, background=True)
-        spotify_call(sp.start_playback, context_uri=playlist_id, offset={"position": random.randrange(0,20)}, position_ms=random.randrange(0,140000), device_id=SPOTIFY_DEVICE_ID)
+        spotify_call(sp.start_playback, context_uri=playlist_id, device_id=SPOTIFY_DEVICE_ID)
+        time.sleep(0.1)  # tiny delay for device to become active
         spotify_call(sp.shuffle, True, device_id=SPOTIFY_DEVICE_ID)
         print(f"Switching to playlist: {playlist_id}")
 
@@ -146,7 +149,8 @@ def update_backward_station():
         playlist_id = PLAYLISTS[current_playlist_index]
         rgb_led.color = PLAYLIST_COLORS[current_playlist_index]
         rgb_led.blink(on_time=0.2, off_time=0.1, on_color=rgb_led.color, n=1, background=True)
-        spotify_call(sp.start_playback, context_uri=playlist_id, offset={"position": random.randrange(0,40)}, position_ms=random.randrange(0,140000), device_id=SPOTIFY_DEVICE_ID)
+        spotify_call(sp.start_playback, context_uri=playlist_id, device_id=SPOTIFY_DEVICE_ID)
+        time.sleep(0.1)  # tiny delay for device to become active
         spotify_call(sp.shuffle, True, device_id=SPOTIFY_DEVICE_ID)
         print(f"Switching to playlist: {playlist_id}")
 
@@ -184,6 +188,7 @@ def nfc_listener():
                     continue
                 print(f"Playing URI from card: {text}")
                 spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+                time.sleep(0.1)
                 spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
                 last_played_uri = text
         except Exception as e:
