@@ -194,7 +194,7 @@ def nfc_listener():
               rgb_led.off()
               time.sleep(5)
               break
-            current_uri = spotify_call(sp.current_playback,['context']['uri'])
+            current_uri = sp.current_playback(['context']['uri'])
             print(current_uri)
             reader.write(current_uri)
         if text == last_played_uri:
@@ -202,7 +202,7 @@ def nfc_listener():
           continue
         elif text.startswith("spotify:"):
           sleep_time = time.time()
-          current_uri = spotify_call(sp.current_playback,['context']['uri'])
+          current_uri = sp.current_playback(['context']['uri'])
           print(current_uri)
           #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
           rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
