@@ -185,14 +185,14 @@ def nfc_listener():
                 print("⚠️ Empty NFC read, retrying...")
                 continue
     
-            if text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
+            elif text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
                 print(f"⚠️ Incomplete NFC text ({text}), retrying...")
                 continue
     
             print(f"NFC tag detected with ID: {id} and text: {text}")
     
             # --- rest of your logic here ---
-            if text == last_played_uri:
+            elif text == last_played_uri:
                 print("Current Playing Card")
                 continue
             elif text.startswith("spotify:"):
