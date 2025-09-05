@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------25
+# -----------------------26
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -200,7 +200,7 @@ def nfc_listener():
         if text == last_played_uri:
           print("Current Playing Card")
           continue
-        elif text.startswith("spotify:"):
+        elif text.startswith("spotify:"): and len(text) < 30
           sleep_time = time.time()
           current_uri = sp.current_playback()['context']['uri']
           print(current_uri)
