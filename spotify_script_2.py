@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------23
+# -----------------------24
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -205,7 +205,7 @@ def nfc_listener():
 
             # play album from start
             print(f"Playing album from start: {text}")
-            spotify_call(sp.start_playback,device_id=DEVICE_ID,context_uri=text)
+            spotify_call(sp.start_playback,device_id=SPOTIFY_DEVICE_ID,context_uri=text)
 
             # blink LED to confirm
             set_led_state(text, True)
