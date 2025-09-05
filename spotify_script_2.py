@@ -170,55 +170,43 @@ def update_backward_station():
 # NFC THREAD
 # -----------------------
 def nfc_listener():
-  global sleep_time, last_played_uri
+
+global sleep_time, last_played_uri
   
-  try:
-    while True:
-        print("entered NFC loop")
-        print(last_played_uri)
+MIN_SPOTIFY_URI_LENGTH = 20  # adjust if needed
+
+while True:
+    try:
         id, text = reader.read()
-        text = text.strip()  # Remove any leading and trailing whitespace
+        text = text.strip()
+
+        # Skip empty or corrupted reads
+        if not text:
+            print("⚠️ Empty NFC read, retrying...")
+            continue
+
+        if text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
+            print(f"⚠️ Incomplete NFC text ({text}), retrying...")
+            continue
+
         print(f"NFC tag detected with ID: {id} and text: {text}")
-        #current_uri = sp.current_playback()['context']['uri']
-        #print(current_uri)
-        if text == "MFRC_TRIGGER":
-          print("entered mapping mode")
-          time.sleep(5)
-          while True:
-            #rgb_led.on(0,0,1)
-            rgb_led.blink(on_time=1, off_time=0.5, on_color=(0, 0, 1), background=True)
-            id, text = reader.read()
-            text = text.strip()
-            if text == "MFRC_TRIGGER":
-              print("exiting mapping mode")
-              rgb_led.off()
-              time.sleep(5)
-              break
-            current_uri = sp.current_playback()['context']['uri']
-            print(current_uri)
-            reader.write(current_uri)
+
+        # --- rest of your logic here ---
         if text == last_played_uri:
-          print("Current Playing Card")
-          continue
+            print("Current Playing Card")
+            continue
         elif text.startswith("spotify:"):
-          sleep_time = time.time()
-          current_uri = sp.current_playback()['context']['uri']
-          print(current_uri)
-          #sp.transfer_playback(device_id=SPOTIFY_DEVICE_ID, force_play=False)
-          rgb_led.blink(on_time=1, off_time=0.5, on_color=(1, 1, 0), n=1, background=True)
-          spotify_call(sp.start_playback,context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-          time.sleep(2)
-          spotify_call(sp.start_playback)
-          spotify_call(sp.shuffle,False)
-          print(f"Playing Spotify URI: {text}")
-          last_played_uri = text
-        #else:
-        #  print(f"Invalid Spotify URI: {text}")
-        #  time.sleep(1)  # Delay between NFC reads
-  except requests.exceptions.RequestException as e:
-    print(f"Network error: {e}")
-  except Exception as e:
-    print(f"Unexpected error: {e}")
+            print(f"Valid Spotify URI: {text}")
+            spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+            spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
+            last_played_uri = text
+            print(f"Playing Spotify URI: {text}")
+        else:
+            print(f"Invalid NFC text: {text}")
+
+    except Exception as e:
+        print(f"NFC read error: {e}")
+
 
 
 # -----------------------
