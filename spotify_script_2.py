@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------21
+# -----------------------22
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -170,42 +170,67 @@ def update_backward_station():
 # NFC THREAD
 # -----------------------
 def nfc_listener():
+    global last_played_uri
 
-    global sleep_time, last_played_uri
-      
-    MIN_SPOTIFY_URI_LENGTH = 20  # adjust if needed
-    
+    reader = SimpleMFRC522()
+
+    MIN_SPOTIFY_URI_LENGTH = 20  # prevent partial/truncated reads
+
     while True:
         try:
             id, text = reader.read()
             text = text.strip()
-    
-            # Skip empty or corrupted reads
+
+            # --- validation step ---
             if not text:
                 print("⚠️ Empty NFC read, retrying...")
                 continue
-    
-            elif text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
+
+            if text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
                 print(f"⚠️ Incomplete NFC text ({text}), retrying...")
                 continue
-    
+
             print(f"NFC tag detected with ID: {id} and text: {text}")
-    
-            # --- rest of your logic here ---
-            elif text == last_played_uri:
+
+            # --- avoid re-triggering the same card ---
+            if text == last_played_uri:
                 print("Current Playing Card")
                 continue
+
+            # --- mapped cards (custom IDs you defined) ---
+            if text in NFC_MAPPING:
+                playlist_uri = NFC_MAPPING[text]
+                print(f"Mapped NFC card {text} → {playlist_uri}")
+
+                # Play playlist like a "radio" → random track + random position
+                start_random_song(playlist_uri)
+
+                # light LED for a bit, then off
+                set_led_state(playlist_uri, True)
+                time.sleep(1)
+                set_led_state(playlist_uri, False)
+
+                last_played_uri = text
+
+            # --- direct Spotify URIs ---
             elif text.startswith("spotify:"):
                 print(f"Valid Spotify URI: {text}")
-                spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-                spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
+
+                start_random_song(text)
+
+                # light LED for a bit, then off
+                set_led_state(text, True)
+                time.sleep(1)
+                set_led_state(text, False)
+
                 last_played_uri = text
-                print(f"Playing Spotify URI: {text}")
+
             else:
                 print(f"Invalid NFC text: {text}")
-    
+
         except Exception as e:
             print(f"NFC read error: {e}")
+
 
 
 
