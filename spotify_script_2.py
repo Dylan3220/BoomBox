@@ -9,7 +9,7 @@ from mfrc522 import SimpleMFRC522
 import RPi.GPIO as GPIO
 import requests
 
-# -----------------------19
+# -----------------------20
 # CONFIG
 # -----------------------
 SPOTIFY_CLIENT_ID = 'c9f4f269f1804bf19f0fefee2539931a'
@@ -171,41 +171,41 @@ def update_backward_station():
 # -----------------------
 def nfc_listener():
 
-global sleep_time, last_played_uri
-  
-MIN_SPOTIFY_URI_LENGTH = 20  # adjust if needed
-
-while True:
-    try:
-        id, text = reader.read()
-        text = text.strip()
-
-        # Skip empty or corrupted reads
-        if not text:
-            print("⚠️ Empty NFC read, retrying...")
-            continue
-
-        if text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
-            print(f"⚠️ Incomplete NFC text ({text}), retrying...")
-            continue
-
-        print(f"NFC tag detected with ID: {id} and text: {text}")
-
-        # --- rest of your logic here ---
-        if text == last_played_uri:
-            print("Current Playing Card")
-            continue
-        elif text.startswith("spotify:"):
-            print(f"Valid Spotify URI: {text}")
-            spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
-            spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
-            last_played_uri = text
-            print(f"Playing Spotify URI: {text}")
-        else:
-            print(f"Invalid NFC text: {text}")
-
-    except Exception as e:
-        print(f"NFC read error: {e}")
+    global sleep_time, last_played_uri
+      
+    MIN_SPOTIFY_URI_LENGTH = 20  # adjust if needed
+    
+    while True:
+        try:
+            id, text = reader.read()
+            text = text.strip()
+    
+            # Skip empty or corrupted reads
+            if not text:
+                print("⚠️ Empty NFC read, retrying...")
+                continue
+    
+            if text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
+                print(f"⚠️ Incomplete NFC text ({text}), retrying...")
+                continue
+    
+            print(f"NFC tag detected with ID: {id} and text: {text}")
+    
+            # --- rest of your logic here ---
+            if text == last_played_uri:
+                print("Current Playing Card")
+                continue
+            elif text.startswith("spotify:"):
+                print(f"Valid Spotify URI: {text}")
+                spotify_call(sp.start_playback, context_uri=text, device_id=SPOTIFY_DEVICE_ID)
+                spotify_call(sp.shuffle, False, device_id=SPOTIFY_DEVICE_ID)
+                last_played_uri = text
+                print(f"Playing Spotify URI: {text}")
+            else:
+                print(f"Invalid NFC text: {text}")
+    
+        except Exception as e:
+            print(f"NFC read error: {e}")
 
 
 
