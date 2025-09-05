@@ -205,7 +205,7 @@ def nfc_listener():
 
             # play album from start
             print(f"Playing album from start: {text}")
-            spotifycall(sp.start_playback,device_id=DEVICE_ID,context_uri=text)
+            spotify_call(sp.start_playback,device_id=DEVICE_ID,context_uri=text)
 
             # blink LED to confirm
             set_led_state(text, True)
