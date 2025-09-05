@@ -173,66 +173,52 @@ def nfc_listener():
     global last_played_uri
 
     reader = SimpleMFRC522()
-
-    MIN_SPOTIFY_URI_LENGTH = 20  # prevent partial/truncated reads
+    MIN_SPOTIFY_URI_LENGTH = 20  # safety threshold
 
     while True:
         try:
-            id, text = reader.read()
-            text = text.strip()
+            stable_reads = []
+            for attempt in range(3):  # try up to 3 times quickly
+                id, text = reader.read()
+                text = text.strip()
+                if text:
+                    stable_reads.append(text)
+                time.sleep(0.05)  # tiny delay for stability
 
-            # --- validation step ---
-            if not text:
-                print("⚠️ Empty NFC read, retrying...")
+            if not stable_reads:
                 continue
 
-            if text.startswith("spotify:") and len(text) < MIN_SPOTIFY_URI_LENGTH:
-                print(f"⚠️ Incomplete NFC text ({text}), retrying...")
+            # pick the most common read
+            text = max(set(stable_reads), key=stable_reads.count)
+
+            # basic validation
+            if not text.startswith("spotify:") or len(text) < MIN_SPOTIFY_URI_LENGTH:
+                print(f"⚠️ Bad NFC read: {stable_reads}")
                 continue
 
             print(f"NFC tag detected with ID: {id} and text: {text}")
 
-            # --- avoid re-triggering the same card ---
+            # skip if same as currently playing
             if text == last_played_uri:
                 print("Current Playing Card")
                 continue
 
-            # --- mapped cards (custom IDs you defined) ---
-            if text in NFC_MAPPING:
-                playlist_uri = NFC_MAPPING[text]
-                print(f"Mapped NFC card {text} → {playlist_uri}")
+            # play album from start
+            print(f"Playing album from start: {text}")
+            spotifycall(sp.start_playback,device_id=DEVICE_ID,context_uri=text)
 
-                # Play playlist like a "radio" → random track + random position
-                start_random_song(playlist_uri)
+            # blink LED to confirm
+            set_led_state(text, True)
+            time.sleep(1)
+            set_led_state(text, False)
 
-                # light LED for a bit, then off
-                set_led_state(playlist_uri, True)
-                time.sleep(1)
-                set_led_state(playlist_uri, False)
+            last_played_uri = text
 
-                last_played_uri = text
-
-            # --- direct Spotify URIs ---
-            elif text.startswith("spotify:"):
-                print(f"Valid Spotify URI: {text}")
-
-                start_random_song(text)
-
-                # light LED for a bit, then off
-                set_led_state(text, True)
-                time.sleep(1)
-                set_led_state(text, False)
-
-                last_played_uri = text
-
-            else:
-                print(f"Invalid NFC text: {text}")
+            # debounce so it doesn’t instantly re-trigger
+            time.sleep(0.5)
 
         except Exception as e:
             print(f"NFC read error: {e}")
-
-
-
 
 # -----------------------
 # ATTACH CALLBACKS
